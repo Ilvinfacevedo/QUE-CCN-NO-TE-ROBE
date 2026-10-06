@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Que CCN No Te Robe</title>
+<meta name="description" content="Calculadora de horas extras con cortes los días 8 y 23 (República Dominicana).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;600&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: una tarjeta de ponche — resumen del corte arriba, registro rápido, y la lista del corte debajo */
+:root{
+  --bg:#eef1f4; --card:#fbfcfd; --ink:#18212b; --muted:#5b6774; --line:#d5dbe2;
+  --accent:#c2410c; --accent-soft:#fbe5d9; --ok:#0f7a52; --danger:#b42318;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11161c; --card:#19212a; --ink:#e8edf2; --muted:#93a0ad; --line:#2c3743;
+  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --danger:#f2766b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11161c; --card:#19212a; --ink:#e8edf2; --muted:#93a0ad; --line:#2c3743;
+  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --danger:#f2766b; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px;
+  padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+[hidden]{display:none!important}
+.wrap{max-width:640px;margin:0 auto;display:grid;gap:18px}
+h1{font:700 1.9rem/1.1 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);margin:4px 0 0;font-size:.92rem}
+.label{font:600 .72rem/1 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.period{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.period-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px dashed var(--line)}
+.period-head .range{font:600 1rem var(--display);text-align:center}
+.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;font-size:1.1rem;line-height:1}
+.nav:hover{background:var(--bg)}
+.totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line)}
+.tot{background:var(--card);padding:14px;display:grid;gap:6px;min-width:0}
+.tot .v{font:600 1.35rem/1.1 var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tot.main .v{color:var(--accent)}
+.pay{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--accent-soft);font-size:.9rem}
+.pay b{font-weight:600}
+
+form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.field{display:grid;gap:6px;min-width:0}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.hm{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.preview{font-size:.92rem;color:var(--muted)}
+.preview b{color:var(--ink)}
+.primary{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600}
+.primary:hover{filter:brightness(1.07)}
+
+.list{display:grid;gap:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.day{width:46px;text-align:center;font-family:var(--mono);line-height:1.1}
+.day b{display:block;font-size:1.25rem}
+.day span{font-size:.7rem;color:var(--muted);text-transform:uppercase}
+.info{min-width:0}
+.info .t{font-weight:600}
+.chip{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:4px;vertical-align:1px}
+.chip.x2{border-color:var(--accent);color:var(--accent)}
+.info .note{color:var(--muted);font-size:.85rem;overflow-wrap:anywhere}
+.amt{text-align:right;font-family:var(--mono);font-weight:600}
+.del{display:block;margin-left:auto;margin-top:2px;background:none;border:0;color:var(--muted);font-size:.78rem;padding:2px 0;text-decoration:underline}
+.del.confirm{color:var(--danger);font-weight:600}
+.empty{padding:22px 16px;color:var(--muted);text-align:center}
+
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+summary{font-weight:600;cursor:pointer}
+.rates{display:grid;gap:6px;margin-top:12px;font-size:.9rem}
+.rates div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:6px}
+.fine{color:var(--muted);font-size:.8rem;margin:10px 0 0}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:52px;height:52px;flex:none}
+.by{margin:4px 0 0;font:600 .78rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.status{font-size:.8rem;color:var(--muted)}
+.status.ok::before{content:"● ";color:var(--ok)}
+@media (prefers-reduced-motion:no-preference){.item{animation:in .25s ease-out}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3 42 9v14c0 11-7.6 19.4-18 22C13.6 42.4 6 34 6 23V9Z" fill="var(--accent)"/><circle cx="24" cy="23" r="10.5" fill="none" stroke="var(--card)" stroke-width="3"/><path d="M24 16.5V23l4.5 3" fill="none" stroke="var(--card)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Que CCN no te robe</h1>
+    <p class="by">Creada por Ilvinf Acevedo</p>
+    <p class="sub">Tus horas extras, contadas al minuto · cortes los días 8 y 23</p></div></div>
+  </header>
+
+  <section class="period" aria-label="Corte actual">
+    <div class="period-head">
+      <button class="nav" id="prev" aria-label="Corte anterior">‹</button>
+      <div><div class="label" style="text-align:center">Corte</div><div class="range" id="range">—</div></div>
+      <button class="nav" id="next" aria-label="Corte siguiente">›</button>
+    </div>
+    <div class="totals">
+      <div class="tot"><span class="label">Tiempo</span><span class="v" id="tTime">0 h 00</span></div>
+      <div class="tot main"><span class="label">Bruto</span><span class="v" id="tGross">RD$0</span></div>
+      <div class="tot"><span class="label">Neto aprox.</span><span class="v" id="tNet">RD$0</span></div>
+    </div>
+    <div class="pay"><span>Se paga en la quincena del <b id="payDate">—</b></span><span id="countLbl">0 registros</span></div>
+  </section>
+
+  <form id="f" autocomplete="off">
+    <div class="label">Anotar horas extras</div>
+    <div class="row">
+      <div class="field"><label class="label" for="fDate">Fecha</label><input type="date" id="fDate" required></div>
+      <div class="field"><span class="label">Tiempo extra</span>
+        <div class="hm">
+          <input type="number" id="fH" min="0" max="16" inputmode="numeric" placeholder="Horas" aria-label="Horas">
+          <input type="number" id="fM" min="0" max="59" inputmode="numeric" placeholder="Min" aria-label="Minutos">
+        </div>
+      </div>
+    </div>
+    <div class="field"><label class="label" for="fType">Tipo</label>
+      <select id="fType">
+        <option value="normal">Extra normal (+35%)</option>
+        <option value="exceso">Pasé de 68 h en la semana (+100%)</option>
+        <option value="feriado">Feriado o día libre (+100%)</option>
+      </select>
+    </div>
+    <div class="field"><label class="label" for="fNote">Nota (opcional)</label><input type="text" id="fNote" maxlength="80" placeholder="Ej. inventario, cubrí turno"></div>
+    <div class="preview" id="preview">Escribe horas y minutos para ver cuánto te toca.</div>
+    <button class="primary" type="submit" id="save">Guardar</button>
+    <div class="status" id="status">Conectando…</div>
+  </form>
+
+  <section>
+    <div class="label" style="margin:0 0 8px 4px">Registros de este corte</div>
+    <div class="list" id="list"><div class="empty">Aún no hay horas en este corte. Anota la primera arriba.</div></div>
+  </section>
+
+  <details>
+    <summary>Cómo se calcula</summary>
+    <div class="field" style="margin-top:12px"><label class="label" for="fSal">Salario mensual (RD$)</label><input type="number" id="fSal" min="1" step="0.01"></div>
+    <div class="rates">
+      <div><span>Salario diario (mensual ÷ 23.83)</span><span class="num" id="rDay"></span></div>
+      <div><span>Hora normal (diario ÷ 8)</span><span class="num" id="rHour"></span></div>
+      <div><span>Hora extra normal (×1.35)</span><span class="num" id="r135"></span></div>
+      <div><span>Hora al 100% (×2)</span><span class="num" id="r200"></span></div>
+    </div>
+    <p class="fine">El neto resta AFP (2.87%) y SFS (3.04%), como en tu recibo. Es un estimado: tu empresa puede redondear distinto y no incluye ISR. Corte del 9 al 23 se paga el 30; del 24 al 8 se paga el 15. No incluye recargo nocturno porque el turno termina antes de las 9:00 p.m.</p>
+  </details>
+</div>
+
+<script>
+const DEFAULT_SAL = 30000;
+const MAX_H = 16;
+const DED = 0.0287 + 0.0304;
+const MULT = {normal:1.35, exceso:2, feriado:2};
+const TYPE_LBL = {normal:"+35%", exceso:"+100% (más de 68 h)", feriado:"+100% feriado/libre"};
+const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const DIAS = ["dom","lun","mar","mié","jue","vie","sáb"];
+
+let entries = [];          // {id,date:'YYYY-MM-DD',min,type,note,created}
+let salary = DEFAULT_SAL;
+let col = null, settingsDoc = null, mode = "local";
+
+const $ = id => document.getElementById(id);
+const money = n => "RD$" + n.toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2});
+const hm = m => `${Math.floor(m/60)} h ${String(m%60).padStart(2,"0")}`;
+const pad = n => String(n).padStart(2,"0");
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
+
+function hourly(){ return salary/23.83/8; }
+function amount(e){ return (e.min/60) * hourly() * (MULT[e.type] || MULT.normal); }
+
+// Corte: 9–23 → pago día 30 (o último del mes); 24–8 → pago día 15 del mes siguiente al 24
+function periodOf(dateStr){
+  const d = parse(dateStr), y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+  if (day >= 9 && day <= 23) return {key:`${y}-${pad(m+1)}-B`, start:new Date(y,m,9), end:new Date(y,m,23), pay:new Date(y,m,Math.min(30,new Date(y,m+1,0).getDate()))};
+  const sm = day >= 24 ? new Date(y,m,24) : new Date(y,m-1,24);
+  const em = new Date(sm.getFullYear(), sm.getMonth()+1, 8);
+  return {key:`${em.getFullYear()}-${pad(em.getMonth()+1)}-A`, start:sm, end:em, pay:new Date(em.getFullYear(),em.getMonth(),15)};
+}
+function shiftPeriod(p, dir){ const ref = new Date(dir>0 ? p.end : p.start); ref.setDate(ref.getDate()+dir); return periodOf(iso(ref)); }
+const fmtD = d => `${d.getDate()} ${MESES[d.getMonth()]}`;
+
+let viewP = periodOf(iso(new Date()));
+
+function setStatus(text, ok){ const st = $("status"); st.textContent = text; st.className = ok ? "status ok" : "status"; }
+
+function render(){
+  $("range").textContent = `${fmtD(viewP.start)} – ${fmtD(viewP.end)} ${viewP.end.getFullYear()}`;
+  $("payDate").textContent = `${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]}`;
+  const items = entries.filter(e => periodOf(e.date).key === viewP.key)
+    .sort((a,b) => b.date.localeCompare(a.date) || (b.created||0)-(a.created||0));
+  const totMin = items.reduce((s,e)=>s+e.min,0);
+  const gross = items.reduce((s,e)=>s+amount(e),0);
+  $("tTime").textContent = hm(totMin);
+  $("tGross").textContent = money(gross);
+  $("tNet").textContent = money(gross*(1-DED));
+  $("countLbl").textContent = items.length === 1 ? "1 registro" : `${items.length} registros`;
+  const list = $("list"); list.replaceChildren();
+  if (!items.length){ const d = document.createElement("div"); d.className="empty"; d.textContent="Aún no hay horas en este corte. Anota la primera arriba."; list.append(d); }
+  for (const e of items){
+    const d = parse(e.date);
+    const row = document.createElement("div"); row.className = "item";
+    row.innerHTML = `<div class="day"><b>${d.getDate()}</b><span>${DIAS[d.getDay()]}</span></div>
+      <div class="info"><div class="t num"></div><div class="note"></div></div>
+      <div><div class="amt"></div><button class="del" type="button">Borrar</button></div>`;
+    const t = row.querySelector(".t"); t.textContent = hm(e.min);
+    const c = document.createElement("span"); c.className = "chip" + (MULT[e.type]===2?" x2":""); c.textContent = TYPE_LBL[e.type] || TYPE_LBL.normal; t.append(c);
+    row.querySelector(".note").textContent = e.note || "";
+    row.querySelector(".amt").textContent = money(amount(e));
+    const del = row.querySelector(".del");
+    del.addEventListener("click", () => {
+      if (!del.classList.contains("confirm")){ del.classList.add("confirm"); del.textContent="¿Seguro? Toca otra vez"; setTimeout(()=>{del.classList.remove("confirm");del.textContent="Borrar";},3500); return; }
+      removeEntry(e.id).catch(() => setStatus("No se pudo borrar. Revisa tu conexión e intenta de nuevo."));
+    });
+    list.append(row);
+  }
+  const h = hourly();
+  $("rDay").textContent = money(salary/23.83); $("rHour").textContent = money(h);
+  $("r135").textContent = money(h*1.35); $("r200").textContent = money(h*2);
+  preview();
+}
+
+function formEntry(){
+  const H = parseInt($("fH").value||"0",10) || 0, M = parseInt($("fM").value||"0",10) || 0;
+  return {date:$("fDate").value, min:Math.min(MAX_H,Math.max(0,H))*60+Math.min(59,Math.max(0,M)), type:$("fType").value, note:$("fNote").value.trim()};
+}
+function preview(){
+  const e = formEntry();
+  $("preview").innerHTML = e.min ? `Te toca <b class="num">${money(amount(e))}</b> por <b class="num">${hm(e.min)}</b>.` : "Escribe horas y minutos para ver cuánto te toca.";
+}
+
+// ---- almacenamiento ----
+// Fuera de claude.ai (p. ej. GitHub Pages) se guarda en localStorage de este navegador.
+const LS = "horas-extras-v1";
+function lsLoad(){ try{ const s = JSON.parse(localStorage.getItem(LS)||"{}"); entries = Array.isArray(s.entries) ? s.entries : []; salary = Number(s.salary) || DEFAULT_SAL; }catch(_){} }
+function lsSave(){ try{ localStorage.setItem(LS, JSON.stringify({entries, salary})); }catch(_){} }
+
+async function addEntry(e){
+  e.created = Date.now();
+  if (mode === "db"){ await col.add(e); }
+  else { e.id = "l"+e.created; entries.push(e); lsSave(); render(); }
+}
+async function removeEntry(id){
+  if (mode === "db"){ await col.doc(id).delete(); }
+  else { entries = entries.filter(x=>x.id!==id); lsSave(); render(); }
+}
+async function saveSalary(v){
+  salary = v; render();
+  if (mode === "db") { try{ await settingsDoc.set({salary:v}); }catch(_){} } else lsSave();
+}
+
+$("f").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const e = formEntry();
+  if (!e.date){ setStatus("Elige la fecha."); return; }
+  if (!e.min){ setStatus("Escribe al menos 1 minuto de tiempo extra."); return; }
+  $("save").disabled = true;
+  try{
+    await addEntry(e);
+    viewP = periodOf(e.date);
+    $("fH").value = ""; $("fM").value = ""; $("fNote").value = "";
+    setStatus("Guardado.", true);
+    render();
+  }catch(err){ setStatus("No se pudo guardar. Revisa tu conexión e intenta de nuevo."); }
+  $("save").disabled = false;
+});
+["fH","fM","fType","fDate"].forEach(id => $(id).addEventListener("input", preview));
+$("fSal").addEventListener("change", () => { const v = parseFloat($("fSal").value); if (v>0) saveSalary(v); });
+$("prev").addEventListener("click", () => { viewP = shiftPeriod(viewP,-1); render(); });
+$("next").addEventListener("click", () => { viewP = shiftPeriod(viewP,1); render(); });
+
+$("fDate").value = iso(new Date());
+lsLoad(); $("fSal").value = salary; render();
+
+// Si la página corre como Artifact de claude.ai, sincroniza con la cuenta del usuario.
+(async () => {
+  try{
+    const db = await window.claude?.use?.("db");
+    const user = db ? await window.claude.use("user") : null;
+    const uid = user ? await user.id() : null;
+    if (!db || !uid){ setStatus("Guardando solo en este dispositivo."); return; }
+    const base = "data/users/" + uid;
+    col = db.collection(base + "/horas/extras");
+    settingsDoc = db.doc(base + "/ajustes");
+    mode = "db";
+    settingsDoc.onSnapshot(s => { if (s.exists && s.data().salary){ salary = Number(s.data().salary); $("fSal").value = salary; render(); } });
+    col.onSnapshot(snap => {
+      entries = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      setStatus("Guardado en tu cuenta · se sincroniza en todos tus dispositivos", true);
+      render();
+    }, () => setStatus("No se pudo conectar. Recarga la página."));
+  }catch(_){ setStatus("Guardando solo en este dispositivo."); }
+})();
+</script>
+</body>
+</html>
