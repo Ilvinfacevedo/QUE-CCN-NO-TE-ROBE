@@ -25,3 +25,15 @@ aproximado de cada corte. Los datos se guardan en el navegador del dispositivo.
 | 24 al 8    | día 15 |
 
 Es un estimado: la empresa puede redondear distinto.
+
+## Instalarla en el celular
+
+La app es instalable (PWA): tiene ícono propio, abre en pantalla completa y
+funciona sin internet después de la primera visita.
+
+1. Abre https://ilvinfacevedo.github.io/QUE-CCN-NO-TE-ROBE/ en el celular.
+2. **iPhone (Safari):** botón Compartir → *Agregar a pantalla de inicio*.
+   **Android (Chrome):** menú ⋮ → *Instalar app* (o *Agregar a la pantalla principal*).
+
+Los registros se guardan en ese celular. Si borras los datos del navegador o
+desinstalas la app, se pierden.

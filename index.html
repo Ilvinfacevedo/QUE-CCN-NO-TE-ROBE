@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Que CCN No Te Robe</title>
 <meta name="description" content="Calculadora de horas extras con cortes los días 8 y 23 (República Dominicana).">
+<meta name="theme-color" content="#c2410c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Horas extras">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;600&family=Figtree:wght@400;500;600&display=swap">
 <style>
@@ -45,6 +53,7 @@ button{cursor:pointer}
 .tot{background:var(--card);padding:14px;display:grid;gap:6px;min-width:0}
 .tot .v{font:600 1.35rem/1.1 var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .tot.main .v{color:var(--accent)}
+@media (max-width:480px){.totals{grid-template-columns:repeat(2,minmax(0,1fr))}.totals .tot:first-child{grid-column:1/-1}.tot .v{font-size:1.2rem;overflow-wrap:normal;white-space:nowrap}}
 .pay{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--accent-soft);font-size:.9rem}
 .pay b{font-weight:600}
 
@@ -276,6 +285,10 @@ $("next").addEventListener("click", () => { viewP = shiftPeriod(viewP,1); render
 
 $("fDate").value = iso(new Date());
 lsLoad(); $("fSal").value = salary; render();
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
 
 // Si la página corre como Artifact de claude.ai, sincroniza con la cuenta del usuario.
 (async () => {
