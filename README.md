@@ -31,7 +31,10 @@ Es un estimado: la empresa puede redondear distinto.
 La app es instalable (PWA): tiene ícono propio, abre en pantalla completa y
 funciona sin internet después de la primera visita.
 
-1. Abre https://ilvinfacevedo.github.io/QUE-CCN-NO-TE-ROBE/ en el celular.
+1. Abre https://ilvinfacevedo.github.io/QUE-CCN-NO-TE-ROBE/ en el celular, o escanea el QR:
+
+   <img src="qr.png" alt="QR de la app" width="240">
+
 2. **iPhone (Safari):** botón Compartir → *Agregar a pantalla de inicio*.
    **Android (Chrome):** menú ⋮ → *Instalar app* (o *Agregar a la pantalla principal*).
 
