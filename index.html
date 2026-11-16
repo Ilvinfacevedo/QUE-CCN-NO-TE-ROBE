@@ -16,10 +16,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;600&family=Figtree:wght@400;500;600&display=swap">
 <style>
-/* Layout: una tarjeta de ponche — resumen del corte arriba, registro rápido, y la lista del corte debajo */
+/* Layout: una tarjeta de ponche — resumen del corte arriba, comparación con el recibo, registro rápido y la lista del corte */
 :root{
   --bg:#eef1f4; --card:#fbfcfd; --ink:#18212b; --muted:#5b6774; --line:#d5dbe2;
-  --accent:#c2410c; --accent-soft:#fbe5d9; --ok:#0f7a52; --danger:#b42318;
+  --accent:#c2410c; --accent-soft:#fbe5d9; --ok:#0f7a52; --ok-soft:#dcf3e9; --danger:#b42318; --danger-soft:#fde4e1;
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -27,10 +27,10 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#11161c; --card:#19212a; --ink:#e8edf2; --muted:#93a0ad; --line:#2c3743;
-  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --danger:#f2766b; color-scheme:dark}}
+  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --ok-soft:#14302a; --danger:#f2766b; --danger-soft:#3b1d1b; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#11161c; --card:#19212a; --ink:#e8edf2; --muted:#93a0ad; --line:#2c3743;
-  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --danger:#f2766b; color-scheme:dark}
+  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --ok-soft:#14302a; --danger:#f2766b; --danger-soft:#3b1d1b; color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px;
   padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
@@ -42,30 +42,57 @@ h1{font:700 1.9rem/1.1 var(--display);margin:0;letter-spacing:-.01em;text-wrap:b
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
+button:disabled{opacity:.6;cursor:default}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .period{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .period-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px dashed var(--line)}
 .period-head .range{font:600 1rem var(--display);text-align:center}
-.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;font-size:1.1rem;line-height:1}
+.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;font-size:1.1rem;line-height:1;flex:none}
 .nav:hover{background:var(--bg)}
 .totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line)}
-.tot{background:var(--card);padding:14px;display:grid;gap:6px;min-width:0}
+.tot{background:var(--card);padding:14px;display:grid;gap:6px;min-width:0;align-content:start}
 .tot .v{font:600 1.35rem/1.1 var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tot .s{font:400 .78rem/1.2 var(--mono);color:var(--muted)}
 .tot.main .v{color:var(--accent)}
 @media (max-width:480px){.totals{grid-template-columns:repeat(2,minmax(0,1fr))}.totals .tot:first-child{grid-column:1/-1}.tot .v{font-size:1.2rem;overflow-wrap:normal;white-space:nowrap}}
+.tiers{display:flex;flex-wrap:wrap;gap:4px 16px;padding:10px 14px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+.tiers b{color:var(--ink);font-weight:600}
 .pay{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--accent-soft);font-size:.9rem}
 .pay b{font-weight:600}
 
-form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px}
+.recon{border-top:1px solid var(--line);padding:14px;display:grid;gap:12px}
+.verdict{border-radius:10px;padding:10px 12px;font-size:.92rem;background:var(--bg)}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)}
+.verdict.bad{background:var(--danger-soft);color:var(--danger)}
+.verdict b{font-weight:600}
+.cmp{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 12px;font-size:.88rem;align-items:baseline}
+.cmp .h{font:600 .7rem/1 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:right}
+.cmp span:not(.h):not(:first-child){text-align:right}
+.paylist{display:grid;gap:6px}
+.payrow{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:.88rem;border-bottom:1px dotted var(--line);padding-bottom:6px}
+.payrow .m{color:var(--muted);font-size:.8rem}
+.payform{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+@media (max-width:420px){.payform{grid-template-columns:1fr 1fr}.payform button{grid-column:1/-1}}
+
+form,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
 .field{display:grid;gap:6px;min-width:0}
 input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+input[type=checkbox]{width:auto;padding:0}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem}
+.check input{margin-top:4px}
 .hm{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hint{font-size:.82rem;color:var(--muted);margin:0}
 .preview{font-size:.92rem;color:var(--muted)}
 .preview b{color:var(--ink)}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btns > *{flex:1 1 140px}
 .primary{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600}
-.primary:hover{filter:brightness(1.07)}
+.primary:hover:not(:disabled){filter:brightness(1.07)}
+.secondary{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:10px;padding:10px 14px;font-weight:600}
+.secondary:hover{background:var(--accent-soft)}
+.editing{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
 
 .list{display:grid;gap:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
@@ -75,23 +102,26 @@ input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-ra
 .day span{font-size:.7rem;color:var(--muted);text-transform:uppercase}
 .info{min-width:0}
 .info .t{font-weight:600}
-.chip{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:4px;vertical-align:1px}
+.chip{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:4px;vertical-align:1px;font-family:var(--body);font-weight:500}
 .chip.x2{border-color:var(--accent);color:var(--accent)}
 .info .note{color:var(--muted);font-size:.85rem;overflow-wrap:anywhere}
 .amt{text-align:right;font-family:var(--mono);font-weight:600}
-.del{display:block;margin-left:auto;margin-top:2px;background:none;border:0;color:var(--muted);font-size:.78rem;padding:2px 0;text-decoration:underline}
-.del.confirm{color:var(--danger);font-weight:600}
+.acts{display:flex;gap:12px;justify-content:flex-end;margin-top:2px}
+.link{background:none;border:0;color:var(--muted);font-size:.78rem;padding:2px 0;text-decoration:underline}
+.link.confirm{color:var(--danger);font-weight:600}
 .empty{padding:22px 16px;color:var(--muted);text-align:center}
 
 details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
 summary{font-weight:600;cursor:pointer}
-.rates{display:grid;gap:6px;margin-top:12px;font-size:.9rem}
+.dbody{display:grid;gap:12px;margin-top:12px}
+.rates{display:grid;gap:6px;font-size:.9rem}
 .rates div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:6px}
-.fine{color:var(--muted);font-size:.8rem;margin:10px 0 0}
+.fine{color:var(--muted);font-size:.8rem;margin:0}
+.backup{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .brand{display:flex;align-items:center;gap:14px}
 .logo{width:52px;height:52px;flex:none}
 .by{margin:4px 0 0;font:600 .78rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.status{font-size:.8rem;color:var(--muted)}
+.status{font-size:.8rem;color:var(--muted);margin:0}
 .status.ok::before{content:"● ";color:var(--ok)}
 @media (prefers-reduced-motion:no-preference){.item{animation:in .25s ease-out}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
 </style>
@@ -111,15 +141,29 @@ summary{font-weight:600;cursor:pointer}
       <button class="nav" id="next" aria-label="Corte siguiente">›</button>
     </div>
     <div class="totals">
-      <div class="tot"><span class="label">Tiempo</span><span class="v" id="tTime">0 h 00</span></div>
+      <div class="tot"><span class="label">Tiempo</span><span class="v" id="tTime">0 h 00</span><span class="s" id="tDec">0.00 h en el recibo</span></div>
       <div class="tot main"><span class="label">Bruto</span><span class="v" id="tGross">RD$0</span></div>
-      <div class="tot"><span class="label">Neto aprox.</span><span class="v" id="tNet">RD$0</span></div>
+      <div class="tot"><span class="label" id="tNetLbl">Neto aprox.</span><span class="v" id="tNet">RD$0</span></div>
     </div>
+    <div class="tiers" id="tiers"></div>
     <div class="pay"><span>Se paga en la quincena del <b id="payDate">—</b></span><span id="countLbl">0 registros</span></div>
+
+    <div class="recon">
+      <div class="label">Comparar con mi recibo</div>
+      <div class="verdict" id="verdict" aria-live="polite"></div>
+      <div class="cmp" id="cmp" hidden></div>
+      <div class="paylist" id="paylist"></div>
+      <div class="payform">
+        <div class="field"><label class="label" for="pH">Horas en recibo</label><input type="number" id="pH" min="0" step="0.01" inputmode="decimal" placeholder="7.74"></div>
+        <div class="field"><label class="label" for="pAmt">Monto RD$</label><input type="number" id="pAmt" min="0" step="0.01" inputmode="decimal" placeholder="1644.36"></div>
+        <button type="button" class="secondary" id="pAdd">Anotar pago</button>
+      </div>
+      <p class="hint">Copia cada línea "Horas Extras" de tu recibo como un pago aparte. CCN suele poner una línea por semana, y una de ellas puede salir con <b>(R)</b>: anota las dos aquí. Si las horas de una línea no son de este corte, anótala en su corte con las flechas de arriba.</p>
+    </div>
   </section>
 
   <form id="f" autocomplete="off">
-    <div class="label">Anotar horas extras</div>
+    <div class="label" id="formTitle">Anotar horas extras</div>
     <div class="row">
       <div class="field"><label class="label" for="fDate">Fecha</label><input type="date" id="fDate" required></div>
       <div class="field"><span class="label">Tiempo extra</span>
@@ -129,17 +173,22 @@ summary{font-weight:600;cursor:pointer}
         </div>
       </div>
     </div>
+    <div class="field"><label class="label" for="fOut">O pon tu hora de salida</label><input type="time" id="fOut">
+      <p class="hint" id="outHint">Se resta tu hora normal de salida y se llenan las horas solas.</p></div>
     <div class="field"><label class="label" for="fType">Tipo</label>
       <select id="fType">
-        <option value="normal">Extra normal (+35%)</option>
-        <option value="exceso">Pasé de 68 h en la semana (+100%)</option>
+        <option value="normal">Extra normal (+35%; pasa sola a +100% si superas 68 h en la semana)</option>
         <option value="feriado">Feriado o día libre (+100%)</option>
+        <option value="exceso">Marcar al +100% a mano</option>
       </select>
     </div>
     <div class="field"><label class="label" for="fNote">Nota (opcional)</label><input type="text" id="fNote" maxlength="80" placeholder="Ej. inventario, cubrí turno"></div>
     <div class="preview" id="preview">Escribe horas y minutos para ver cuánto te toca.</div>
-    <button class="primary" type="submit" id="save">Guardar</button>
-    <div class="status" id="status">Conectando…</div>
+    <div class="btns">
+      <button class="primary" type="submit" id="save">Guardar</button>
+      <button class="secondary" type="button" id="cancelEdit" hidden>Cancelar</button>
+    </div>
+    <p class="status" id="status">Conectando…</p>
   </form>
 
   <section>
@@ -147,41 +196,100 @@ summary{font-weight:600;cursor:pointer}
     <div class="list" id="list"><div class="empty">Aún no hay horas en este corte. Anota la primera arriba.</div></div>
   </section>
 
-  <details>
-    <summary>Cómo se calcula</summary>
-    <div class="field" style="margin-top:12px"><label class="label" for="fSal">Salario mensual (RD$)</label><input type="number" id="fSal" min="1" step="0.01"></div>
-    <div class="rates">
-      <div><span>Salario diario (mensual ÷ 23.83)</span><span class="num" id="rDay"></span></div>
-      <div><span>Hora normal (diario ÷ 8)</span><span class="num" id="rHour"></span></div>
-      <div><span>Hora extra normal (×1.35)</span><span class="num" id="r135"></span></div>
-      <div><span>Hora al 100% (×2)</span><span class="num" id="r200"></span></div>
+  <details id="yearBox">
+    <summary id="yearTitle">Resumen del año</summary>
+    <div class="dbody">
+      <div class="rates" id="yearRates"></div>
+      <p class="fine">Compara "Bruto anotado" con la columna "Bces / Acum" de "Horas Extras Normales" en tu recibo (es lo acumulado del año). Solo cuenta lo que anotaste en esta app.</p>
     </div>
-    <p class="fine">El neto resta AFP (2.87%) y SFS (3.04%), como en tu recibo. Es un estimado: tu empresa puede redondear distinto y no incluye ISR. Corte del 9 al 23 se paga el 30; del 24 al 8 se paga el 15. No incluye recargo nocturno porque el turno termina antes de las 9:00 p.m.</p>
+  </details>
+
+  <details>
+    <summary>Ajustes y cómo se calcula</summary>
+    <div class="dbody">
+      <div class="row">
+        <div class="field"><label class="label" for="fSal">Salario mensual (RD$)</label><input type="number" id="fSal" min="1" step="0.01" inputmode="decimal"></div>
+        <div class="field"><label class="label" for="fJor">Jornada normal semanal (h)</label><input type="number" id="fJor" min="1" max="68" step="0.5" inputmode="decimal"></div>
+        <div class="field"><label class="label" for="fExit">Hora normal de salida</label><input type="time" id="fExit"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="fDed"><span>Restar AFP (2.87%) y SFS (3.04%) a las horas extras en el neto. En tu recibo del 15/11/2026 no se las restaron: esos descuentos salieron solo del bono vacacional.</span></label>
+      <div class="rates">
+        <div><span>Salario diario (mensual ÷ 23.83)</span><span class="num" id="rDay"></span></div>
+        <div><span>Hora normal (diario ÷ 8)</span><span class="num" id="rHour"></span></div>
+        <div><span>Hora extra normal (×1.35)</span><span class="num" id="r135"></span></div>
+        <div><span>Hora al 100% (×2)</span><span class="num" id="r200"></span></div>
+        <div><span>Pasa a 100% después de</span><span class="num" id="rCap"></span></div>
+      </div>
+      <p class="fine">Se redondea igual que CCN: el salario diario y la hora normal a 2 decimales (RD$30,000 → 1,258.92 → 157.37 → 212.45 la hora extra). El recibo muestra las horas en decimal (7.74 h = 7 h 44 min). Puede haber 1 o 2 centavos de diferencia por redondeo.</p>
+      <p class="fine">Código de Trabajo: las horas después de la jornada se pagan +35%; las que pasan de 68 h en la semana, +100%; el día libre o feriado trabajado, +100%. La semana va de lunes a domingo. Corte del 9 al 23 se paga el 30; del 24 al 8 se paga el 15. No incluye recargo nocturno porque el turno termina antes de las 9:00 p.m., ni ISR. Cambiar el salario solo afecta lo que anotes después.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Respaldo de tus datos</summary>
+    <div class="dbody">
+      <p class="fine">Tus horas y pagos se guardan solo en este navegador. Descarga un respaldo de vez en cuando, y úsalo para pasar tus datos a otro teléfono o navegador.</p>
+      <div class="backup">
+        <button type="button" class="secondary" id="exportBtn">Descargar respaldo</button>
+        <button type="button" class="secondary" id="importBtn">Cargar respaldo</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <p class="status" id="backupMsg" aria-live="polite"></p>
+    </div>
   </details>
 </div>
 
 <script>
-const DEFAULT_SAL = 30000;
-const MAX_H = 16;
+const DEFAULTS = {salary:30000, jornada:44, salida:"18:00", ded:false};
+const MAX_MIN = 16*60;
 const DED = 0.0287 + 0.0304;
-const MULT = {normal:1.35, exceso:2, feriado:2};
-const TYPE_LBL = {normal:"+35%", exceso:"+100% (más de 68 h)", feriado:"+100% feriado/libre"};
+const TOL = 1;   // RD$ de tolerancia por redondeo al comparar con el recibo
+const TYPE_LBL = {normal:"+35%", exceso:"+100% a mano", feriado:"+100% feriado/libre"};
 const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const DIAS = ["dom","lun","mar","mié","jue","vie","sáb"];
 
-let entries = [];          // {id,date:'YYYY-MM-DD',min,type,note,created}
-let salary = DEFAULT_SAL;
+let entries = [];   // {id,date:'YYYY-MM-DD',min,type,note,created,rate}
+let pagos = {};     // {periodKey:[{id,h,amt,created}]}
+let cfg = {...DEFAULTS};
 let col = null, settingsDoc = null, mode = "local";
+let editingId = null;
+let split = new Map();  // id -> {m35, m100}
 
 const $ = id => document.getElementById(id);
-const money = n => "RD$" + n.toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2});
+const r2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
+const money = n => "RD$" + r2(n).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2});
 const hm = m => `${Math.floor(m/60)} h ${String(m%60).padStart(2,"0")}`;
+const dec = m => r2(m/60).toFixed(2);
 const pad = n => String(n).padStart(2,"0");
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
+const toMin = t => { const [h,m] = String(t||"").split(":").map(Number); return Number.isFinite(h) ? h*60 + (m||0) : null; };
 
-function hourly(){ return salary/23.83/8; }
-function amount(e){ return (e.min/60) * hourly() * (MULT[e.type] || MULT.normal); }
+// Igual que CCN: diario y hora redondeados a 2 decimales.
+function daily(sal = cfg.salary){ return r2(sal/23.83); }
+function hourly(sal = cfg.salary){ return r2(daily(sal)/8); }
+function capMin(){ return Math.max(0, 68 - (Number(cfg.jornada)||44)) * 60; }
+
+// Reparte cada registro entre +35% y +100% según lo acumulado en su semana (lunes a domingo).
+function computeSplit(){
+  split = new Map();
+  const weekKey = s => { const d = parse(s); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return iso(d); };
+  const byWeek = new Map();
+  for (const e of entries){ const k = weekKey(e.date); if (!byWeek.has(k)) byWeek.set(k, []); byWeek.get(k).push(e); }
+  const cap = capMin();
+  for (const list of byWeek.values()){
+    list.sort((a,b) => a.date.localeCompare(b.date) || (a.created||0)-(b.created||0));
+    let cum = 0;
+    for (const e of list){
+      if (e.type === "feriado"){ split.set(e.id, {m35:0, m100:e.min}); continue; }
+      if (e.type === "exceso"){ split.set(e.id, {m35:0, m100:e.min}); cum += e.min; continue; }
+      const m35 = Math.min(e.min, Math.max(0, cap - cum));
+      split.set(e.id, {m35, m100:e.min - m35}); cum += e.min;
+    }
+  }
+}
+function rateOf(e){ return Number(e.rate) || hourly(); }
+function amount(e){ const s = split.get(e.id) || {m35:e.min, m100:0}; return rateOf(e) * (s.m35/60*1.35 + s.m100/60*2); }
 
 // Corte: 9–23 → pago día 30 (o último del mes); 24–8 → pago día 15 del mes siguiente al 24
 function periodOf(dateStr){
@@ -197,70 +305,192 @@ const fmtD = d => `${d.getDate()} ${MESES[d.getMonth()]}`;
 let viewP = periodOf(iso(new Date()));
 
 function setStatus(text, ok){ const st = $("status"); st.textContent = text; st.className = ok ? "status ok" : "status"; }
+function el(tag, cls, text){ const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+
+function periodSummary(key){
+  const items = entries.filter(e => periodOf(e.date).key === key);
+  let min = 0, m35 = 0, m100 = 0, gross = 0;
+  for (const e of items){ const s = split.get(e.id); min += e.min; m35 += s.m35; m100 += s.m100; gross += amount(e); }
+  const ps = pagos[key] || [];
+  return {items, min, m35, m100, gross:r2(gross), paidH:r2(ps.reduce((a,p)=>a+Number(p.h||0),0)), paidAmt:r2(ps.reduce((a,p)=>a+Number(p.amt||0),0)), pays:ps};
+}
 
 function render(){
+  computeSplit();
+  const S = periodSummary(viewP.key);
   $("range").textContent = `${fmtD(viewP.start)} – ${fmtD(viewP.end)} ${viewP.end.getFullYear()}`;
   $("payDate").textContent = `${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]}`;
-  const items = entries.filter(e => periodOf(e.date).key === viewP.key)
-    .sort((a,b) => b.date.localeCompare(a.date) || (b.created||0)-(a.created||0));
-  const totMin = items.reduce((s,e)=>s+e.min,0);
-  const gross = items.reduce((s,e)=>s+amount(e),0);
-  $("tTime").textContent = hm(totMin);
-  $("tGross").textContent = money(gross);
-  $("tNet").textContent = money(gross*(1-DED));
-  $("countLbl").textContent = items.length === 1 ? "1 registro" : `${items.length} registros`;
+  $("tTime").textContent = hm(S.min);
+  $("tDec").textContent = `${dec(S.min)} h en el recibo`;
+  $("tGross").textContent = money(S.gross);
+  $("tNetLbl").textContent = cfg.ded ? "Neto aprox." : "Neto (sin AFP/SFS)";
+  $("tNet").textContent = money(cfg.ded ? S.gross*(1-DED) : S.gross);
+  $("countLbl").textContent = S.items.length === 1 ? "1 registro" : `${S.items.length} registros`;
+  const tiers = $("tiers"); tiers.replaceChildren();
+  const tier = (lbl, m) => { const s = el("span"); s.append(lbl + ": ", el("b", "num", `${dec(m)} h`)); tiers.append(s); };
+  tier("Al 35%", S.m35); tier("Al 100%", S.m100);
+  tiers.hidden = !S.min;
+
+  renderRecon(S);
+
   const list = $("list"); list.replaceChildren();
-  if (!items.length){ const d = document.createElement("div"); d.className="empty"; d.textContent="Aún no hay horas en este corte. Anota la primera arriba."; list.append(d); }
-  for (const e of items){
-    const d = parse(e.date);
-    const row = document.createElement("div"); row.className = "item";
-    row.innerHTML = `<div class="day"><b>${d.getDate()}</b><span>${DIAS[d.getDay()]}</span></div>
-      <div class="info"><div class="t num"></div><div class="note"></div></div>
-      <div><div class="amt"></div><button class="del" type="button">Borrar</button></div>`;
-    const t = row.querySelector(".t"); t.textContent = hm(e.min);
-    const c = document.createElement("span"); c.className = "chip" + (MULT[e.type]===2?" x2":""); c.textContent = TYPE_LBL[e.type] || TYPE_LBL.normal; t.append(c);
-    row.querySelector(".note").textContent = e.note || "";
-    row.querySelector(".amt").textContent = money(amount(e));
-    const del = row.querySelector(".del");
+  if (!S.items.length) list.append(el("div", "empty", "Aún no hay horas en este corte. Anota la primera arriba."));
+  S.items.sort((a,b) => b.date.localeCompare(a.date) || (b.created||0)-(a.created||0));
+  for (const e of S.items){
+    const d = parse(e.date), s = split.get(e.id);
+    const row = el("div", "item");
+    const day = el("div", "day"); day.append(el("b", null, d.getDate()), el("span", null, DIAS[d.getDay()]));
+    const info = el("div", "info");
+    const t = el("div", "t num", `${hm(e.min)} `); t.append(el("span", "num", `(${dec(e.min)} h)`));
+    let lbl = TYPE_LBL[e.type] || TYPE_LBL.normal;
+    if (e.type === "normal" && s.m100) lbl = s.m35 ? `${dec(s.m35)} h +35% · ${dec(s.m100)} h +100%` : "+100% (más de 68 h)";
+    t.append(el("span", "chip" + (s.m100 ? " x2" : ""), lbl));
+    info.append(t, el("div", "note", e.note || ""));
+    const right = el("div");
+    right.append(el("div", "amt", money(amount(e))));
+    const acts = el("div", "acts");
+    const ed = el("button", "link", "Editar"); ed.type = "button"; ed.addEventListener("click", () => startEdit(e));
+    const del = el("button", "link", "Borrar"); del.type = "button";
     del.addEventListener("click", () => {
       if (!del.classList.contains("confirm")){ del.classList.add("confirm"); del.textContent="¿Seguro? Toca otra vez"; setTimeout(()=>{del.classList.remove("confirm");del.textContent="Borrar";},3500); return; }
+      if (editingId === e.id) stopEdit();
       removeEntry(e.id).catch(() => setStatus("No se pudo borrar. Revisa tu conexión e intenta de nuevo."));
     });
+    acts.append(ed, del); right.append(acts);
+    row.append(day, info, right);
     list.append(row);
   }
+
   const h = hourly();
-  $("rDay").textContent = money(salary/23.83); $("rHour").textContent = money(h);
+  $("rDay").textContent = money(daily()); $("rHour").textContent = money(h);
   $("r135").textContent = money(h*1.35); $("r200").textContent = money(h*2);
+  $("rCap").textContent = `${capMin()/60} h extra en la semana`;
+  $("outHint").textContent = `Se resta tu hora normal de salida (${fmt12(cfg.salida)}) y se llenan las horas solas.`;
+  renderYear();
   preview();
 }
 
+function fmt12(t){ const m = toMin(t); if (m == null) return "—"; const h = Math.floor(m/60), mm = m%60; return `${((h+11)%12)+1}:${pad(mm)} ${h<12?"a.m.":"p.m."}`; }
+
+function renderRecon(S){
+  const v = $("verdict"), cmp = $("cmp"), pl = $("paylist");
+  pl.replaceChildren(); cmp.replaceChildren();
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (!S.pays.length){
+    cmp.hidden = true; v.className = "verdict";
+    if (!S.min) v.textContent = "No hay horas anotadas en este corte.";
+    else if (today < viewP.pay) v.textContent = `Te deben ${money(S.gross)} por ${dec(S.min)} h. Cuando llegue el recibo del ${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]}, anota aquí lo que te pagaron.`;
+    else v.textContent = `¿Ya te pagaron? Anota las horas y el monto de tu recibo para comprobar que te pagaron ${dec(S.min)} h (${money(S.gross)}).`;
+    return;
+  }
+  cmp.hidden = false;
+  const c = (...xs) => xs.forEach(x => cmp.append(typeof x === "string" ? el("span", null, x) : x));
+  c(el("span"), el("span", "h", "Anotado"), el("span", "h", "Pagado"));
+  c("Horas", el("span", "num", dec(S.min)), el("span", "num", S.paidH.toFixed(2)));
+  c("Monto", el("span", "num", money(S.gross)), el("span", "num", money(S.paidAmt)));
+  const diff = r2(S.paidAmt - S.gross), dh = r2(S.paidH - r2(S.min/60));
+  // CCN cuenta en centésimas de hora (y su reloj puede marcar un minuto distinto por día):
+  // se acepta 0.01 h por día anotado + 0.01 h, valoradas al 100%.
+  const tol = Math.max(TOL, r2(0.01 * (S.items.length + 1) * hourly() * 2));
+  if (Math.abs(diff) <= tol){ v.className = "verdict ok"; v.replaceChildren("Cuadra. ", el("b", null, Math.abs(diff) > 0 ? `Diferencia de ${money(Math.abs(diff))} (${Math.abs(dh).toFixed(2)} h): redondeo o el reloj marcó un minuto distinto.` : "Exacto.")); }
+  else if (diff < 0){ v.className = "verdict bad"; v.replaceChildren("Te faltan ", el("b", "num", money(-diff)), dh < 0 ? ` (${(-dh).toFixed(2)} h sin pagar). Reclama con tu supervisor o en nómina; lleva esta lista.` : ". Las horas cuadran pero el monto no: revisa la tarifa con nómina."); }
+  else { v.className = "verdict"; v.replaceChildren("Te pagaron ", el("b", "num", money(diff)), dh > 0 ? ` de más (${dh.toFixed(2)} h). Quizás incluye horas de otro corte, o te faltó anotar algún día.` : " de más. Revisa si el recibo incluye otro concepto."); }
+  for (const p of S.pays){
+    const row = el("div", "payrow");
+    const l = el("span"); l.append(el("span", "num", `${Number(p.h).toFixed(2)} h · ${money(Number(p.amt))}`));
+    if (p.h > 0) l.append(el("span", "m", `  (${money(Number(p.amt)/Number(p.h))}/h)`));
+    const b = el("button", "link", "Quitar"); b.type = "button";
+    b.addEventListener("click", () => { pagos[viewP.key] = (pagos[viewP.key]||[]).filter(x => x.id !== p.id); if (!pagos[viewP.key].length) delete pagos[viewP.key]; saveCfg(); });
+    row.append(l, b); pl.append(row);
+  }
+}
+
+function renderYear(){
+  const y = viewP.end.getFullYear();
+  $("yearTitle").textContent = `Resumen ${y}`;
+  const keys = new Set(entries.filter(e => e.date.startsWith(y+"-")).map(e => periodOf(e.date).key));
+  Object.keys(pagos).forEach(k => { if (k.startsWith(y+"-")) keys.add(k); });
+  let min = 0, gross = 0, paidAmt = 0, cortes = 0;
+  for (const k of keys){ if (!k.startsWith(y+"-")) continue; const S = periodSummary(k); min += S.min; gross += S.gross; paidAmt += S.paidAmt; cortes++; }
+  const box = $("yearRates"); box.replaceChildren();
+  const line = (a, b) => { const d = el("div"); d.append(el("span", null, a), el("span", "num", b)); box.append(d); };
+  line("Cortes con horas", String(cortes));
+  line("Horas anotadas", `${hm(min)} (${dec(min)} h)`);
+  line("Bruto anotado", money(gross));
+  line("Pagado según recibos anotados", money(paidAmt));
+}
+
 function formEntry(){
-  const H = parseInt($("fH").value||"0",10) || 0, M = parseInt($("fM").value||"0",10) || 0;
-  return {date:$("fDate").value, min:Math.min(MAX_H,Math.max(0,H))*60+Math.min(59,Math.max(0,M)), type:$("fType").value, note:$("fNote").value.trim()};
+  const H = Math.max(0, parseInt($("fH").value||"0",10) || 0), M = Math.max(0, Math.min(59, parseInt($("fM").value||"0",10) || 0));
+  return {date:$("fDate").value, min:Math.min(MAX_MIN, H*60 + M), type:$("fType").value, note:$("fNote").value.trim()};
 }
 function preview(){
   const e = formEntry();
-  $("preview").innerHTML = e.min ? `Te toca <b class="num">${money(amount(e))}</b> por <b class="num">${hm(e.min)}</b>.` : "Escribe horas y minutos para ver cuánto te toca.";
+  if (!e.min){ $("preview").textContent = "Escribe horas y minutos para ver cuánto te toca."; return; }
+  const mult = e.type === "normal" ? 1.35 : 2;
+  const val = (editingId ? rateOf(entries.find(x => x.id === editingId) || {}) : hourly()) * e.min/60 * mult;
+  const p = $("preview"); p.replaceChildren("Te toca ", el("b", "num", money(val)), " por ", el("b", "num", `${hm(e.min)} (${dec(e.min)} h)`), e.type === "normal" ? " al 35%." : " al 100%.");
+  if (formEntry().min >= MAX_MIN) p.append(" Máximo 16 h por registro.");
 }
+
+$("fOut").addEventListener("input", () => {
+  const out = toMin($("fOut").value), base = toMin(cfg.salida);
+  if (out == null || base == null) return;
+  let diff = out - base; if (diff < 0) diff += 24*60;   // pasó de medianoche
+  if (diff > MAX_MIN){ $("outHint").textContent = "Esa hora da más de 16 h extra; revisa la hora."; return; }
+  $("fH").value = Math.floor(diff/60); $("fM").value = diff%60; preview();
+});
+
+function startEdit(e){
+  editingId = e.id;
+  $("fDate").value = e.date; $("fH").value = Math.floor(e.min/60); $("fM").value = e.min%60;
+  $("fType").value = e.type in TYPE_LBL ? e.type : "normal"; $("fNote").value = e.note || ""; $("fOut").value = "";
+  $("formTitle").textContent = "Editar registro"; $("save").textContent = "Guardar cambios";
+  $("cancelEdit").hidden = false; $("f").classList.add("editing");
+  $("f").scrollIntoView({behavior:"smooth", block:"start"}); preview();
+}
+function stopEdit(){
+  editingId = null;
+  $("formTitle").textContent = "Anotar horas extras"; $("save").textContent = "Guardar";
+  $("cancelEdit").hidden = true; $("f").classList.remove("editing");
+  $("fH").value = ""; $("fM").value = ""; $("fNote").value = ""; $("fOut").value = ""; $("fType").value = "normal"; preview();
+}
+$("cancelEdit").addEventListener("click", stopEdit);
 
 // ---- almacenamiento ----
 // Fuera de claude.ai (p. ej. GitHub Pages) se guarda en localStorage de este navegador.
 const LS = "horas-extras-v1";
-function lsLoad(){ try{ const s = JSON.parse(localStorage.getItem(LS)||"{}"); entries = Array.isArray(s.entries) ? s.entries : []; salary = Number(s.salary) || DEFAULT_SAL; }catch(_){} }
-function lsSave(){ try{ localStorage.setItem(LS, JSON.stringify({entries, salary})); }catch(_){} }
+function lsLoad(){
+  try{
+    const s = JSON.parse(localStorage.getItem(LS)||"{}");
+    entries = Array.isArray(s.entries) ? s.entries : [];
+    cfg = {...DEFAULTS, ...(s.cfg||{})};
+    if (Number(s.salary) && !(s.cfg && s.cfg.salary)) cfg.salary = Number(s.salary);   // formato viejo
+    pagos = s.pagos && typeof s.pagos === "object" ? s.pagos : {};
+    let fixed = false;
+    for (const e of entries) if (!Number(e.rate)) { e.rate = hourly(); fixed = true; }
+    if (fixed) lsSave();
+  }catch(_){}
+}
+function lsSave(){ try{ localStorage.setItem(LS, JSON.stringify({entries, cfg, pagos, salary:cfg.salary})); }catch(_){} }
 
 async function addEntry(e){
-  e.created = Date.now();
+  e.created = Date.now(); e.rate = hourly();
   if (mode === "db"){ await col.add(e); }
   else { e.id = "l"+e.created; entries.push(e); lsSave(); render(); }
+}
+async function updateEntry(id, patch){
+  if (mode === "db"){ await col.doc(id).update(patch); }
+  else { const e = entries.find(x => x.id === id); if (e) Object.assign(e, patch); lsSave(); render(); }
 }
 async function removeEntry(id){
   if (mode === "db"){ await col.doc(id).delete(); }
   else { entries = entries.filter(x=>x.id!==id); lsSave(); render(); }
 }
-async function saveSalary(v){
-  salary = v; render();
-  if (mode === "db") { try{ await settingsDoc.set({salary:v}); }catch(_){} } else lsSave();
+async function saveCfg(){
+  render();
+  if (mode === "db") { try{ await settingsDoc.set({...cfg, pagos}); }catch(_){ setStatus("No se pudo guardar el ajuste. Revisa tu conexión."); } }
+  else lsSave();
 }
 
 $("f").addEventListener("submit", async ev => {
@@ -270,21 +500,76 @@ $("f").addEventListener("submit", async ev => {
   if (!e.min){ setStatus("Escribe al menos 1 minuto de tiempo extra."); return; }
   $("save").disabled = true;
   try{
-    await addEntry(e);
+    if (editingId){ await updateEntry(editingId, e); setStatus("Cambios guardados.", true); stopEdit(); }
+    else { await addEntry(e); setStatus("Guardado.", true); $("fH").value = ""; $("fM").value = ""; $("fNote").value = ""; $("fOut").value = ""; }
     viewP = periodOf(e.date);
-    $("fH").value = ""; $("fM").value = ""; $("fNote").value = "";
-    setStatus("Guardado.", true);
     render();
   }catch(err){ setStatus("No se pudo guardar. Revisa tu conexión e intenta de nuevo."); }
   $("save").disabled = false;
 });
 ["fH","fM","fType","fDate"].forEach(id => $(id).addEventListener("input", preview));
-$("fSal").addEventListener("change", () => { const v = parseFloat($("fSal").value); if (v>0) saveSalary(v); });
+
+$("pAdd").addEventListener("click", () => {
+  const h = r2(parseFloat($("pH").value)), amt = r2(parseFloat($("pAmt").value));
+  if (!(h >= 0) || !(amt > 0)){ $("verdict").className = "verdict bad"; $("verdict").textContent = "Escribe las horas y el monto tal como salen en el recibo."; return; }
+  (pagos[viewP.key] = pagos[viewP.key] || []).push({id:"p"+Date.now(), h, amt, created:Date.now()});
+  $("pH").value = ""; $("pAmt").value = "";
+  saveCfg();
+});
+
+$("fSal").addEventListener("change", () => { const v = parseFloat($("fSal").value); if (v > 0){ cfg.salary = v; saveCfg(); } });
+$("fJor").addEventListener("change", () => { const v = parseFloat($("fJor").value); if (v > 0 && v <= 68){ cfg.jornada = v; saveCfg(); } });
+$("fExit").addEventListener("change", () => { if ($("fExit").value){ cfg.salida = $("fExit").value; saveCfg(); } });
+$("fDed").addEventListener("change", () => { cfg.ded = $("fDed").checked; saveCfg(); });
+function fillCfg(){ $("fSal").value = cfg.salary; $("fJor").value = cfg.jornada; $("fExit").value = cfg.salida; $("fDed").checked = !!cfg.ded; }
+
 $("prev").addEventListener("click", () => { viewP = shiftPeriod(viewP,-1); render(); });
 $("next").addEventListener("click", () => { viewP = shiftPeriod(viewP,1); render(); });
 
+// ---- respaldo ----
+$("exportBtn").addEventListener("click", () => {
+  const data = {app:"horas-extras", version:2, exported:new Date().toISOString(), cfg, salary:cfg.salary, entries, pagos};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `horas-extras-respaldo-${iso(new Date())}.json`;
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $("backupMsg").textContent = `Respaldo descargado (${entries.length} registros).`;
+});
+$("importBtn").addEventListener("click", () => $("importFile").click());
+$("importFile").addEventListener("change", async ev => {
+  const file = ev.target.files[0]; ev.target.value = "";
+  if (!file) return;
+  const msg = $("backupMsg");
+  try{
+    const data = JSON.parse(await file.text());
+    if (!data || !Array.isArray(data.entries)) throw new Error("formato");
+    const fileSal = Number(data.cfg && data.cfg.salary) || Number(data.salary) || cfg.salary;
+    const valid = data.entries.filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.date) && Number(e.min) > 0)
+      .map(e => ({date:e.date, min:Math.min(MAX_MIN, Math.round(Number(e.min))), type:e.type in TYPE_LBL ? e.type : "normal",
+        note:String(e.note||"").slice(0,80), created:Number(e.created)||Date.now(), rate:Number(e.rate) || hourly(fileSal)}));
+    const sig = e => `${e.date}|${e.min}|${e.type}|${e.created}`;
+    const have = new Set(entries.map(sig));
+    const nuevos = valid.filter(e => !have.has(sig(e)));
+    // Pagos: se agregan los que no existan (mismo id).
+    let np = 0;
+    if (data.pagos && typeof data.pagos === "object"){
+      for (const [k, list] of Object.entries(data.pagos)){
+        if (!/^\d{4}-\d{2}-[AB]$/.test(k) || !Array.isArray(list)) continue;
+        const cur = pagos[k] = pagos[k] || [];
+        for (const p of list){ if (p && Number(p.amt) > 0 && !cur.some(x => x.id === p.id)){ cur.push({id:String(p.id||"p"+Date.now()+np), h:r2(Number(p.h)||0), amt:r2(Number(p.amt)), created:Number(p.created)||Date.now()}); np++; } }
+        if (!cur.length) delete pagos[k];
+      }
+    }
+    if (mode === "db"){ for (const e of nuevos) await col.add(e); if (np) await saveCfg(); }
+    else { nuevos.forEach((e,i) => { e.id = "l"+e.created+"-"+i; entries.push(e); }); lsSave(); render(); }
+    msg.textContent = (nuevos.length || np) ? `Se importaron ${nuevos.length} registros y ${np} pagos.` : "No había nada nuevo en ese archivo.";
+  }catch(_){ msg.textContent = "Ese archivo no es un respaldo válido de esta app."; }
+});
+
 $("fDate").value = iso(new Date());
-lsLoad(); $("fSal").value = salary; render();
+lsLoad(); fillCfg(); render();
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
@@ -301,7 +586,13 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     col = db.collection(base + "/horas/extras");
     settingsDoc = db.doc(base + "/ajustes");
     mode = "db";
-    settingsDoc.onSnapshot(s => { if (s.exists && s.data().salary){ salary = Number(s.data().salary); $("fSal").value = salary; render(); } });
+    settingsDoc.onSnapshot(s => {
+      if (!s.exists) return;
+      const d = s.data() || {};
+      cfg = {...DEFAULTS, ...cfg, ...Object.fromEntries(Object.entries(d).filter(([k]) => k in DEFAULTS))};
+      pagos = d.pagos && typeof d.pagos === "object" ? d.pagos : {};
+      fillCfg(); render();
+    });
     col.onSnapshot(snap => {
       entries = snap.docs.map(d => ({id:d.id, ...d.data()}));
       setStatus("Guardado en tu cuenta · se sincroniza en todos tus dispositivos", true);

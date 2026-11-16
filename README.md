@@ -9,13 +9,26 @@ Abre `index.html` en el navegador (o publícala con GitHub Pages). Anota la fech
 las horas y minutos extra y el tipo; la app suma el tiempo, el bruto y el neto
 aproximado de cada corte. Los datos se guardan en el navegador del dispositivo.
 
+También puedes:
+
+- **Comparar con tu recibo:** anota cada línea "Horas Extras" del recibo (horas y
+  monto) y la app te dice si cuadra o cuánto te falta.
+- **Calcular por hora de salida:** pones a qué hora saliste y la app resta tu hora
+  normal de salida.
+- **Editar** registros, ver el **resumen del año** y **descargar/cargar un respaldo**.
+
 ## Cómo se calcula
 
-- Salario diario = salario mensual ÷ 23.83
-- Hora normal = salario diario ÷ 8
-- Hora extra normal = hora normal × 1.35
-- Más de 68 h en la semana, feriado o día libre = hora normal × 2
-- Neto aprox. = bruto − AFP (2.87 %) − SFS (3.04 %). No incluye ISR.
+Se redondea igual que el recibo de CCN:
+
+- Salario diario = salario mensual ÷ 23.83, a 2 decimales (30,000 → 1,258.92)
+- Hora normal = salario diario ÷ 8, a 2 decimales (→ 157.37)
+- Hora extra normal = hora normal × 1.35 (→ 212.45)
+- Lo que pase de 68 h en la semana (lunes a domingo) pasa solo a × 2; feriado o día libre = × 2
+- Cada registro guarda la tarifa del día en que se anotó: un aumento de salario no cambia lo ya ganado.
+- El recibo muestra horas en decimal (7.74 h = 7 h 44 min).
+- Neto: por defecto sin descuentos, porque en el recibo los descuentos de AFP y SFS
+  no se aplicaron a las horas extras. En ajustes se pueden restar AFP (2.87 %) y SFS (3.04 %). No incluye ISR.
 
 ## Cortes y pagos
 
@@ -39,4 +52,5 @@ funciona sin internet después de la primera visita.
    **Android (Chrome):** menú ⋮ → *Instalar app* (o *Agregar a la pantalla principal*).
 
 Los registros se guardan en ese celular. Si borras los datos del navegador o
-desinstalas la app, se pierden.
+desinstalas la app, se pierden: usa **Respaldo de tus datos → Descargar respaldo**
+de vez en cuando.
