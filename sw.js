@@ -1,5 +1,5 @@
 // Caché para que la app abra sin internet. Sube la versión al cambiar archivos.
-const CACHE = "ccn-v3";
+const CACHE = "ccn-v4";
 const ASSETS = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/icon.svg"];
 
 self.addEventListener("install", e => {

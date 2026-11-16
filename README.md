@@ -15,7 +15,10 @@ También puedes:
   monto) y la app te dice si cuadra o cuánto te falta.
 - **Calcular por hora de salida:** pones a qué hora saliste y la app resta tu hora
   normal de salida.
-- **Editar** registros, ver el **resumen del año** y **descargar/cargar un respaldo**.
+- **Editar** registros (toca cualquiera) y las líneas del recibo, con **Deshacer** al borrar.
+- Ver el **resumen del año** con gráfica por corte, y **descargar/cargar un respaldo**.
+- Ajustar todo en **Ajustes**: salario, jornada, hora de salida, divisor, recargos,
+  límite semanal, días de corte y de pago, AFP/SFS y tema claro/oscuro/automático.
 
 ## Cómo se calcula
 

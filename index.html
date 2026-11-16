@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Que CCN No Te Robe</title>
 <meta name="description" content="Calculadora de horas extras con cortes los días 8 y 23 (República Dominicana).">
-<meta name="theme-color" content="#c2410c">
+<meta name="theme-color" content="#14110e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,458 +14,973 @@
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;600&family=Figtree:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: una tarjeta de ponche — resumen del corte arriba, comparación con el recibo, registro rápido y la lista del corte */
+/* Diseño: una tarjeta de ponche premium. Tarjeta oscura del corte arriba (como una tarjeta bancaria),
+   registros agrupados por semana (como las líneas del recibo), hojas que suben para anotar y editar. */
 :root{
-  --bg:#eef1f4; --card:#fbfcfd; --ink:#18212b; --muted:#5b6774; --line:#d5dbe2;
-  --accent:#c2410c; --accent-soft:#fbe5d9; --ok:#0f7a52; --ok-soft:#dcf3e9; --danger:#b42318; --danger-soft:#fde4e1;
+  --bg:#f3efe8; --surface:#fffdf9; --surface-2:#f8f4ed; --ink:#1c1915; --muted:#6f685e; --faint:#a39b8f; --line:#e7e0d4;
+  --accent:#e0531a; --accent-2:#ff8a3d; --accent-soft:#fde7da; --on-accent:#fff;
+  --ok:#11795a; --ok-soft:#ddf2e8; --warn:#9a6500; --warn-soft:#fbefd2; --danger:#c0331f; --danger-soft:#fbe2dd;
+  --hero-1:#1a1612; --hero-2:#2c1d13; --hero-ink:#fbf6ef; --hero-muted:#c9bcad; --hero-line:rgba(255,255,255,.1);
+  --shadow:0 1px 2px rgba(40,28,15,.05),0 8px 24px -12px rgba(40,28,15,.18);
   --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:20px; --nav-h:68px;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#11161c; --card:#19212a; --ink:#e8edf2; --muted:#93a0ad; --line:#2c3743;
-  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --ok-soft:#14302a; --danger:#f2766b; --danger-soft:#3b1d1b; color-scheme:dark}}
+  --bg:#0d0d0f; --surface:#16171a; --surface-2:#1d1f23; --ink:#f2efe9; --muted:#9d978d; --faint:#6c675f; --line:#2a2c31;
+  --accent:#ff6f2c; --accent-2:#ffa060; --accent-soft:#3a2014; --on-accent:#1a0d05;
+  --ok:#52d29d; --ok-soft:#123027; --warn:#f2b84b; --warn-soft:#352812; --danger:#ff7d6b; --danger-soft:#3a1b17;
+  --hero-1:#1b1612; --hero-2:#3a2112; --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px -14px rgba(0,0,0,.7);
+  color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11161c; --card:#19212a; --ink:#e8edf2; --muted:#93a0ad; --line:#2c3743;
-  --accent:#f08a4b; --accent-soft:#3a2418; --ok:#4cc790; --ok-soft:#14302a; --danger:#f2766b; --danger-soft:#3b1d1b; color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px;
-  padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(48px + env(safe-area-inset-bottom,0px))}
+  --bg:#0d0d0f; --surface:#16171a; --surface-2:#1d1f23; --ink:#f2efe9; --muted:#9d978d; --faint:#6c675f; --line:#2a2c31;
+  --accent:#ff6f2c; --accent-2:#ffa060; --accent-soft:#3a2014; --on-accent:#1a0d05;
+  --ok:#52d29d; --ok-soft:#123027; --warn:#f2b84b; --warn-soft:#352812; --danger:#ff7d6b; --danger-soft:#3a1b17;
+  --hero-1:#1b1612; --hero-2:#3a2112; --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px -14px rgba(0,0,0,.7);
+  color-scheme:dark}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);
+  padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(var(--nav-h) + 110px + env(safe-area-inset-bottom,0px))}
 [hidden]{display:none!important}
-.wrap{max-width:640px;margin:0 auto;display:grid;gap:18px}
-h1{font:700 1.9rem/1.1 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
-.sub{color:var(--muted);margin:4px 0 0;font-size:.92rem}
-.label{font:600 .72rem/1 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 button,input,select{font:inherit;color:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.6;cursor:default}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{cursor:pointer;border:0;background:none;padding:0}
+button:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.label{font:600 .7rem/1 var(--body);text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.muted{color:var(--muted)}
+.wrap{max-width:560px;margin:0 auto;display:grid;gap:16px}
+.view{display:grid;gap:16px}
+.ico{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
-.period{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.period-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-bottom:1px dashed var(--line)}
-.period-head .range{font:600 1rem var(--display);text-align:center}
-.nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;font-size:1.1rem;line-height:1;flex:none}
-.nav:hover{background:var(--bg)}
-.totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line)}
-.tot{background:var(--card);padding:14px;display:grid;gap:6px;min-width:0;align-content:start}
-.tot .v{font:600 1.35rem/1.1 var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.tot .s{font:400 .78rem/1.2 var(--mono);color:var(--muted)}
-.tot.main .v{color:var(--accent)}
-@media (max-width:480px){.totals{grid-template-columns:repeat(2,minmax(0,1fr))}.totals .tot:first-child{grid-column:1/-1}.tot .v{font-size:1.2rem;overflow-wrap:normal;white-space:nowrap}}
-.tiers{display:flex;flex-wrap:wrap;gap:4px 16px;padding:10px 14px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
-.tiers b{color:var(--ink);font-weight:600}
-.pay{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--accent-soft);font-size:.9rem}
-.pay b{font-weight:600}
+/* ---------- cabecera ---------- */
+.top{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;flex:none;filter:drop-shadow(0 4px 10px rgba(224,83,26,.35))}
+.brand{min-width:0;flex:1}
+.brand h1{font:800 1.28rem/1.05 var(--display);margin:0;letter-spacing:-.02em}
+.brand p{margin:3px 0 0;font:600 .66rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.iconbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink);box-shadow:var(--shadow)}
+.iconbtn:hover{border-color:var(--faint)}
 
-.recon{border-top:1px solid var(--line);padding:14px;display:grid;gap:12px}
-.verdict{border-radius:10px;padding:10px 12px;font-size:.92rem;background:var(--bg)}
-.verdict.ok{background:var(--ok-soft);color:var(--ok)}
-.verdict.bad{background:var(--danger-soft);color:var(--danger)}
-.verdict b{font-weight:600}
-.cmp{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 12px;font-size:.88rem;align-items:baseline}
-.cmp .h{font:600 .7rem/1 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:right}
-.cmp span:not(.h):not(:first-child){text-align:right}
-.paylist{display:grid;gap:6px}
-.payrow{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:.88rem;border-bottom:1px dotted var(--line);padding-bottom:6px}
-.payrow .m{color:var(--muted);font-size:.8rem}
-.payform{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
-@media (max-width:420px){.payform{grid-template-columns:1fr 1fr}.payform button{grid-column:1/-1}}
+/* ---------- selector de corte ---------- */
+.switch{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px;box-shadow:var(--shadow)}
+.switch .nav{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--ink)}
+.switch .nav:hover{background:var(--surface-2)}
+.switch .mid{text-align:center;min-width:0}
+.switch .mid b{display:block;font:700 1rem/1.15 var(--display);letter-spacing:-.01em}
+.switch .mid span{font-size:.75rem;color:var(--muted)}
+.switch .today{font-size:.72rem;font-weight:600;color:var(--accent);padding:2px 0 0}
 
-form,.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
-.field{display:grid;gap:6px;min-width:0}
-input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
-input[type=checkbox]{width:auto;padding:0}
-.check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem}
-.check input{margin-top:4px}
-.hm{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.hint{font-size:.82rem;color:var(--muted);margin:0}
-.preview{font-size:.92rem;color:var(--muted)}
-.preview b{color:var(--ink)}
-.btns{display:flex;gap:10px;flex-wrap:wrap}
-.btns > *{flex:1 1 140px}
-.primary{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:600}
-.primary:hover:not(:disabled){filter:brightness(1.07)}
-.secondary{background:transparent;border:1px solid var(--accent);color:var(--accent);border-radius:10px;padding:10px 14px;font-weight:600}
-.secondary:hover{background:var(--accent-soft)}
-.editing{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+/* ---------- tarjeta principal ---------- */
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:20px 20px 16px;color:var(--hero-ink);
+  background:radial-gradient(120% 90% at 100% 0%,rgba(255,122,48,.55) 0%,rgba(255,122,48,0) 55%),
+             radial-gradient(80% 70% at 0% 100%,rgba(255,170,90,.18) 0%,rgba(255,170,90,0) 60%),
+             linear-gradient(160deg,var(--hero-1),var(--hero-2));
+  box-shadow:0 18px 40px -18px rgba(70,30,5,.55);isolation:isolate}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.12;
+  background-image:radial-gradient(rgba(255,255,255,.7) .6px,transparent .6px);background-size:14px 14px;mask-image:linear-gradient(180deg,#000,transparent 70%)}
+.hero .label{color:var(--hero-muted)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:600 .74rem/1 var(--body);padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--hero-ink);white-space:nowrap;border:1px solid rgba(255,255,255,.12)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--hero-muted)}
+.pill.ok i{background:#4fdc9f}.pill.bad i{background:#ff7a66}.pill.warn i{background:#ffc35a}.pill.wait i{background:#ffb27a}
+.big{font:600 clamp(2.3rem,11vw,3.1rem)/1 var(--mono);letter-spacing:-.04em;margin:14px 0 4px;font-variant-numeric:tabular-nums}
+.big small{font-size:.42em;letter-spacing:0;opacity:.7;margin-right:4px;vertical-align:.55em}
+.hero-sub{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--hero-muted);font-size:.86rem}
+.hero-sub b{color:var(--hero-ink);font-weight:600}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;align-items:end;height:74px;margin-top:16px;padding-top:4px}
+.strip button{display:grid;grid-template-rows:1fr auto;gap:4px;height:100%;align-items:end;min-width:0}
+.strip .bar{border-radius:4px 4px 2px 2px;background:rgba(255,255,255,.09);min-height:3px;transition:height .4s cubic-bezier(.2,.8,.2,1)}
+.strip .bar.on{background:linear-gradient(180deg,#ffb27a,#ff6f2c)}
+.strip .bar.x2{background:linear-gradient(180deg,#ffd27a,#ff8a3d)}
+.strip .d{font:500 .58rem/1 var(--mono);color:var(--hero-muted);text-align:center}
+.strip .today .d{color:#fff;font-weight:600}
+.strip .today .bar:not(.on){background:rgba(255,255,255,.28)}
+.strip .wk .d{opacity:.55}
+.tiers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--hero-line)}
+.tiers div{display:grid;gap:4px}
+.tiers b{font:600 1rem/1 var(--mono)}
 
-.list{display:grid;gap:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
-.item:first-child{border-top:0}
-.day{width:46px;text-align:center;font-family:var(--mono);line-height:1.1}
-.day b{display:block;font-size:1.25rem}
-.day span{font-size:.7rem;color:var(--muted);text-transform:uppercase}
-.info{min-width:0}
-.info .t{font-weight:600}
-.chip{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:4px;vertical-align:1px;font-family:var(--body);font-weight:500}
-.chip.x2{border-color:var(--accent);color:var(--accent)}
-.info .note{color:var(--muted);font-size:.85rem;overflow-wrap:anywhere}
-.amt{text-align:right;font-family:var(--mono);font-weight:600}
-.acts{display:flex;gap:12px;justify-content:flex-end;margin-top:2px}
-.link{background:none;border:0;color:var(--muted);font-size:.78rem;padding:2px 0;text-decoration:underline}
-.link.confirm{color:var(--danger);font-weight:600}
-.empty{padding:22px 16px;color:var(--muted);text-align:center}
+/* ---------- tarjetas ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.card.pad{padding:16px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:6px 4px -6px}
+.sec-h h2{font:700 1.05rem/1.2 var(--display);margin:0;letter-spacing:-.01em}
 
-details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
-summary{font-weight:600;cursor:pointer}
-.dbody{display:grid;gap:12px;margin-top:12px}
-.rates{display:grid;gap:6px;font-size:.9rem}
-.rates div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding-bottom:6px}
-.fine{color:var(--muted);font-size:.8rem;margin:0}
-.backup{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.brand{display:flex;align-items:center;gap:14px}
-.logo{width:52px;height:52px;flex:none}
-.by{margin:4px 0 0;font:600 .78rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
-.status{font-size:.8rem;color:var(--muted);margin:0}
-.status.ok::before{content:"● ";color:var(--ok)}
-@media (prefers-reduced-motion:no-preference){.item{animation:in .25s ease-out}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+/* semana */
+.week{overflow:hidden}
+.week-h{padding:14px 16px 12px;display:grid;gap:8px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.week-h .row1{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.week-h .t{font-weight:700;font-size:.92rem}
+.week-h .a{font:600 .92rem var(--mono)}
+.meter{height:6px;border-radius:99px;background:var(--line);overflow:hidden;position:relative}
+.meter span{position:absolute;inset:0 auto 0 0;border-radius:99px;background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+.meter.over span{background:linear-gradient(90deg,var(--accent),#d4206a)}
+.week-h .m{font-size:.76rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:13px 16px;width:100%;text-align:left;border-top:1px solid var(--line);transition:background .15s}
+.week-h + .item{border-top:0}
+.item:hover{background:var(--surface-2)}
+.day{width:44px;height:48px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-content:center;text-align:center;line-height:1}
+.day b{font:700 1.15rem/1 var(--display)}
+.day span{font:600 .6rem/1 var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.info{min-width:0;display:grid;gap:3px}
+.info .t{font:600 1rem/1.2 var(--mono)}
+.info .t span{color:var(--faint);font-weight:400;font-size:.8rem;margin-left:4px}
+.info .n{color:var(--muted);font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;font:600 .68rem/1 var(--body);padding:4px 8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.chip.x2{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.amt{text-align:right;font:600 .98rem/1.2 var(--mono)}
+.amt small{display:block;font:500 .7rem var(--body);color:var(--faint);margin-top:3px}
+
+.empty{padding:34px 22px;text-align:center;display:grid;gap:12px;justify-items:center}
+.empty svg{width:64px;height:64px;color:var(--accent)}
+.empty h3{margin:0;font:700 1.1rem var(--display)}
+.empty p{margin:0;color:var(--muted);max-width:30ch}
+
+/* botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:13px 18px;font-weight:700;transition:transform .12s,filter .15s,background .15s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#fff;box-shadow:0 8px 20px -8px rgba(224,83,26,.65)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.ghost{background:var(--surface-2);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--faint)}
+.btn.danger{color:var(--danger);background:var(--danger-soft)}
+.btn.block{width:100%}
+.btn.sm{padding:9px 14px;font-size:.88rem;border-radius:12px}
+
+/* recibo */
+.verdict{border-radius:var(--r);padding:18px;display:grid;gap:6px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+.verdict .vt{display:flex;align-items:center;gap:10px;font:700 1.15rem/1.2 var(--display)}
+.verdict .vi{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--surface-2)}
+.verdict p{margin:0;color:var(--muted);font-size:.9rem}
+.verdict.ok{background:var(--ok-soft);border-color:transparent}.verdict.ok .vt{color:var(--ok)}.verdict.ok .vi{background:var(--ok);color:var(--surface)}
+.verdict.bad{background:var(--danger-soft);border-color:transparent}.verdict.bad .vt{color:var(--danger)}.verdict.bad .vi{background:var(--danger);color:var(--surface)}
+.verdict.warn{background:var(--warn-soft);border-color:transparent}.verdict.warn .vt{color:var(--warn)}.verdict.warn .vi{background:var(--warn);color:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{font:600 .66rem/1 var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:right;padding:0 0 10px}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 0;border-top:1px solid var(--line);text-align:right}
+td.num{font-family:var(--mono)}
+tr.tot td{font-weight:700;border-top:1.5px solid var(--ink)}
+.pos{color:var(--ok)}.neg{color:var(--danger)}
+.payrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:13px 16px;border-top:1px solid var(--line);width:100%;text-align:left}
+.payrow:first-child{border-top:0}
+.payrow:hover{background:var(--surface-2)}
+.payrow .l{font-weight:600}
+.payrow .s{font-size:.78rem;color:var(--muted)}
+.hint{font-size:.82rem;color:var(--muted);margin:0;line-height:1.45}
+.hint b{color:var(--ink)}
+
+/* año */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{padding:14px;display:grid;gap:6px}
+.kpi b{font:600 1.2rem/1.1 var(--mono);overflow-wrap:anywhere}
+.kpi.hl b{color:var(--accent)}
+.chart{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;align-items:end;height:150px;padding:8px 2px 0}
+.chart button{height:100%;display:flex;align-items:flex-end;position:relative;border-radius:4px}
+.chart .b{width:100%;border-radius:4px 4px 2px 2px;background:var(--line);min-height:3px;transition:height .5s cubic-bezier(.2,.8,.2,1)}
+.chart .b.on{background:linear-gradient(180deg,var(--accent-2),var(--accent))}
+.chart .b.sel{outline:2px solid var(--ink);outline-offset:1px}
+.chart .p{position:absolute;left:-1px;right:-1px;height:3px;border-radius:2px;background:var(--ok)}
+.chart-x{display:grid;grid-template-columns:repeat(12,1fr);font:500 .62rem/1 var(--mono);color:var(--muted);text-align:center;margin-top:8px}
+.legend{display:flex;gap:14px;font-size:.76rem;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);margin-right:6px;vertical-align:-1px}
+.legend i.p{background:var(--ok);height:3px;vertical-align:2px}
+.crow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);width:100%;text-align:left}
+.crow:first-child{border-top:0}
+.crow:hover{background:var(--surface-2)}
+.crow .r{font-weight:600;font-size:.92rem}
+.crow .s{font-size:.76rem;color:var(--muted)}
+.tag{font:600 .66rem/1 var(--body);padding:5px 8px;border-radius:99px;white-space:nowrap;background:var(--surface-2);color:var(--muted)}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.bad{background:var(--danger-soft);color:var(--danger)}.tag.warn{background:var(--warn-soft);color:var(--warn)}
+
+/* ajustes */
+.group{padding:4px 16px}
+.group h3{font:700 .95rem var(--display);margin:14px 0 2px}
+.group .gh{font-size:.8rem;color:var(--muted);margin:0 0 6px}
+.set{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+.group h3 + .set,.group .gh + .set{border-top:0}
+.set label{font-size:.92rem}
+.set small{display:block;color:var(--muted);font-size:.76rem}
+.set input{width:118px;text-align:right;font-family:var(--mono)}
+.unit{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.82rem}
+input,select{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);min-width:0}
+input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.toggle{position:relative;width:50px;height:30px;flex:none}
+.toggle input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer;z-index:1;width:100%}
+.toggle span{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .2s}
+.toggle span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.toggle input:checked + span{background:var(--accent)}
+.toggle input:checked + span::after{transform:translateX(20px)}
+.toggle input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.seg button,.seg label{border-radius:10px;padding:9px 6px;text-align:center;font-weight:600;font-size:.86rem;color:var(--muted);cursor:pointer;position:relative;line-height:1.2}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg [aria-pressed="true"],.seg label:has(input:checked){background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg label:has(input:focus-visible){outline:2px solid var(--accent)}
+.seg small{display:block;font-weight:500;font-size:.68rem;color:var(--muted);margin-top:2px}
+.rates{display:grid;gap:0}
+.rates div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px dotted var(--line);font-size:.9rem}
+.rates div:first-child{border-top:0}
+.fine{color:var(--muted);font-size:.78rem;margin:0;line-height:1.5}
+
+/* barra inferior */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:20;
+  width:min(528px,calc(100% - 24px));height:var(--nav-h);display:grid;grid-template-columns:repeat(4,1fr);align-items:center;
+  background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(18px) saturate(1.6);-webkit-backdrop-filter:blur(18px) saturate(1.6);
+  border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 40px -12px rgba(0,0,0,.35);padding:0 6px}
+.tab{display:grid;justify-items:center;gap:3px;font:600 .66rem/1 var(--body);color:var(--faint);padding:8px 0;border-radius:16px}
+.tab .ico{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--accent)}
+.tab[aria-current="page"] .ico{stroke-width:2.2}
+.fab{position:fixed;z-index:21;right:max(16px,calc(50% - 264px));bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px));
+  width:60px;height:60px;border-radius:20px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(160deg,var(--accent-2),var(--accent));box-shadow:0 14px 30px -10px rgba(224,83,26,.8),0 0 0 4px var(--bg);transition:transform .15s}
+.fab:active{transform:scale(.94)}
+.fab .ico{width:28px;height:28px;stroke-width:2.4}
+
+/* hojas (dialog) */
+dialog.sheet{border:0;padding:0;margin:auto auto 0;width:100%;max-width:560px;max-height:94dvh;border-radius:28px 28px 0 0;background:var(--surface);color:var(--ink);box-shadow:0 -20px 60px -20px rgba(0,0,0,.5);overflow:hidden}
+dialog.sheet[open]{display:flex;flex-direction:column}
+dialog.sheet::backdrop{background:rgba(10,8,6,.5);backdrop-filter:blur(3px)}
+@media (min-width:640px){dialog.sheet{margin:auto;border-radius:28px}}
+@media (prefers-reduced-motion:no-preference){
+  dialog.sheet[open]{animation:up .32s cubic-bezier(.2,.9,.25,1)}
+  @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+  .view{animation:fade .25s ease-out}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+.grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:10px auto 0;flex:none}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;padding:10px 20px 4px;flex:none}
+.sheet-h h2{margin:0;font:800 1.3rem var(--display);letter-spacing:-.02em}
+.sheet-b{padding:12px 20px calc(20px + env(safe-area-inset-bottom,0px));overflow:auto;display:grid;gap:16px}
+.field{display:grid;gap:7px;min-width:0}
+.field > .label{margin-left:2px}
+.timebox{background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:16px;display:grid;gap:12px}
+.timebig{text-align:center;font:600 2.6rem/1 var(--mono);letter-spacing:-.04em}
+.timebig span{font-size:.4em;color:var(--muted);letter-spacing:0;margin:0 4px 0 2px}
+.timebig small{display:block;font:500 .78rem var(--body);color:var(--muted);letter-spacing:0;margin-top:6px}
+.hm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hm input{text-align:center;font:600 1.1rem var(--mono);background:var(--surface)}
+.quick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.quick button{font:600 .8rem var(--mono);padding:8px 11px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.quick button:hover{border-color:var(--accent);color:var(--accent)}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.78rem}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.outrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.outrow input{background:var(--surface)}
+.prev{border-radius:16px;padding:14px 16px;background:var(--accent-soft);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.prev .v{font:700 1.3rem var(--mono);color:var(--accent)}
+.prev .s{font-size:.78rem;color:var(--muted)}
+details.adv summary{cursor:pointer;font-size:.85rem;color:var(--muted);font-weight:600;list-style:none}
+details.adv summary::before{content:"＋ "}
+details.adv[open] summary::before{content:"－ "}
+details.adv .field{margin-top:10px}
+.actions{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.actions.one{grid-template-columns:1fr}
+.err{color:var(--danger);font-size:.84rem;margin:0;min-height:1em}
+
+/* aviso */
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 26px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:40;
+  background:var(--ink);color:var(--bg);border-radius:16px;padding:12px 14px 12px 18px;display:flex;align-items:center;gap:14px;font-size:.9rem;font-weight:500;
+  box-shadow:0 14px 40px -10px rgba(0,0,0,.5);transition:transform .25s,opacity .25s;width:max-content;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.toast button{color:var(--accent-2);font-weight:700;padding:4px 6px}
+.foot{text-align:center;font-size:.74rem;color:var(--faint);margin:8px 0 0}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+</svg>
+
 <div class="wrap">
-  <header>
-    <div class="brand"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 3 42 9v14c0 11-7.6 19.4-18 22C13.6 42.4 6 34 6 23V9Z" fill="var(--accent)"/><circle cx="24" cy="23" r="10.5" fill="none" stroke="var(--card)" stroke-width="3"/><path d="M24 16.5V23l4.5 3" fill="none" stroke="var(--card)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>Que CCN no te robe</h1>
-    <p class="by">Creada por Ilvinf Acevedo</p>
-    <p class="sub">Tus horas extras, contadas al minuto · cortes los días 8 y 23</p></div></div>
+  <header class="top">
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a52"/><stop offset="1" stop-color="#e0531a"/></linearGradient></defs><path d="M24 3 42 9v14c0 11-7.6 19.4-18 22C13.6 42.4 6 34 6 23V9Z" fill="url(#lg)"/><circle cx="24" cy="23" r="10.5" fill="none" stroke="#fff" stroke-width="3"/><path d="M24 16.5V23l4.5 3" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="brand"><h1>Que CCN no te robe</h1><p>Creada por Ilvinf Acevedo</p></div>
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Cambiar tema"><svg class="ico"><use href="#i-auto"/></svg></button>
   </header>
 
-  <section class="period" aria-label="Corte actual">
-    <div class="period-head">
-      <button class="nav" id="prev" aria-label="Corte anterior">‹</button>
-      <div><div class="label" style="text-align:center">Corte</div><div class="range" id="range">—</div></div>
-      <button class="nav" id="next" aria-label="Corte siguiente">›</button>
-    </div>
-    <div class="totals">
-      <div class="tot"><span class="label">Tiempo</span><span class="v" id="tTime">0 h 00</span><span class="s" id="tDec">0.00 h en el recibo</span></div>
-      <div class="tot main"><span class="label">Bruto</span><span class="v" id="tGross">RD$0</span></div>
-      <div class="tot"><span class="label" id="tNetLbl">Neto aprox.</span><span class="v" id="tNet">RD$0</span></div>
-    </div>
-    <div class="tiers" id="tiers"></div>
-    <div class="pay"><span>Se paga en la quincena del <b id="payDate">—</b></span><span id="countLbl">0 registros</span></div>
+  <div class="switch" id="switch">
+    <button class="nav" id="prev" type="button" aria-label="Corte anterior"><svg class="ico"><use href="#i-left"/></svg></button>
+    <div class="mid"><b id="range">—</b><span id="rangeSub">—</span><div><button class="today" id="goToday" type="button" hidden>Ir al corte de hoy</button></div></div>
+    <button class="nav" id="next" type="button" aria-label="Corte siguiente"><svg class="ico"><use href="#i-right"/></svg></button>
+  </div>
 
-    <div class="recon">
-      <div class="label">Comparar con mi recibo</div>
-      <div class="verdict" id="verdict" aria-live="polite"></div>
-      <div class="cmp" id="cmp" hidden></div>
-      <div class="paylist" id="paylist"></div>
-      <div class="payform">
-        <div class="field"><label class="label" for="pH">Horas en recibo</label><input type="number" id="pH" min="0" step="0.01" inputmode="decimal" placeholder="7.74"></div>
-        <div class="field"><label class="label" for="pAmt">Monto RD$</label><input type="number" id="pAmt" min="0" step="0.01" inputmode="decimal" placeholder="1644.36"></div>
-        <button type="button" class="secondary" id="pAdd">Anotar pago</button>
+  <!-- ============ CORTE ============ -->
+  <main class="view" id="v-corte">
+    <section class="hero" aria-label="Resumen del corte">
+      <div class="hero-top"><span class="label">Bruto del corte</span><span class="pill" id="pill"><i></i><span>—</span></span></div>
+      <div class="big num" id="hGross"><small>RD$</small>0.00</div>
+      <div class="hero-sub"><span><b class="num" id="hTime">0 h 00</b> · <span class="num" id="hDec">0.00 h</span></span><span id="hNet"></span></div>
+      <div class="strip" id="strip" aria-label="Horas por día del corte"></div>
+      <div class="tiers">
+        <div><span class="label" id="tl1">Al 35%</span><b id="t1">0.00 h</b></div>
+        <div><span class="label" id="tl2">Al 100%</span><b id="t2">0.00 h</b></div>
       </div>
-      <p class="hint">Copia cada línea "Horas Extras" de tu recibo como un pago aparte. CCN suele poner una línea por semana, y una de ellas puede salir con <b>(R)</b>: anota las dos aquí. Si las horas de una línea no son de este corte, anótala en su corte con las flechas de arriba.</p>
-    </div>
-  </section>
+    </section>
+    <div class="sec-h"><h2>Registros</h2><span class="label" id="count">0 registros</span></div>
+    <div id="weeks" class="view" style="gap:12px"></div>
+  </main>
 
-  <form id="f" autocomplete="off">
-    <div class="label" id="formTitle">Anotar horas extras</div>
-    <div class="row">
-      <div class="field"><label class="label" for="fDate">Fecha</label><input type="date" id="fDate" required></div>
-      <div class="field"><span class="label">Tiempo extra</span>
-        <div class="hm">
-          <input type="number" id="fH" min="0" max="16" inputmode="numeric" placeholder="Horas" aria-label="Horas">
-          <input type="number" id="fM" min="0" max="59" inputmode="numeric" placeholder="Min" aria-label="Minutos">
-        </div>
+  <!-- ============ RECIBO ============ -->
+  <main class="view" id="v-recibo" hidden>
+    <div class="verdict" id="verdict"></div>
+    <section class="card pad">
+      <table aria-label="Anotado contra pagado">
+        <thead><tr><th></th><th>Anotado</th><th>Pagado</th><th>Dif.</th></tr></thead>
+        <tbody id="cmpBody"></tbody>
+      </table>
+    </section>
+    <div class="sec-h"><h2>Líneas del recibo</h2><button class="btn ghost sm" id="addPay" type="button"><svg class="ico"><use href="#i-plus"/></svg>Agregar</button></div>
+    <section class="card" id="payList"></section>
+    <div class="sec-h"><h2>Tus horas por semana</h2></div>
+    <section class="card pad">
+      <table aria-label="Horas por semana"><thead><tr><th>Semana</th><th>Horas</th><th>Monto</th></tr></thead><tbody id="wkBody"></tbody></table>
+      <p class="hint" style="margin-top:12px">CCN suele poner <b>una línea de "Horas Extras" por semana</b> y a veces una sale con <b>(R)</b>. Compara cada línea del recibo con su semana en esta tabla. Si una línea es de otro corte, anótala en ese corte con las flechas de arriba.</p>
+    </section>
+  </main>
+
+  <!-- ============ AÑO ============ -->
+  <main class="view" id="v-anio" hidden>
+    <div class="switch">
+      <button class="nav" id="yPrev" type="button" aria-label="Año anterior"><svg class="ico"><use href="#i-left"/></svg></button>
+      <div class="mid"><b id="yLbl">2026</b><span>Toca una barra para ver ese corte</span></div>
+      <button class="nav" id="yNext" type="button" aria-label="Año siguiente"><svg class="ico"><use href="#i-right"/></svg></button>
+    </div>
+    <div class="kpis">
+      <div class="card kpi hl"><span class="label">Bruto anotado</span><b id="kGross">RD$0</b></div>
+      <div class="card kpi"><span class="label">Horas</span><b id="kHours">0 h</b></div>
+      <div class="card kpi"><span class="label">Pagado (recibos)</span><b id="kPaid">RD$0</b></div>
+      <div class="card kpi"><span class="label">Diferencia</span><b id="kDiff">RD$0</b></div>
+    </div>
+    <section class="card pad">
+      <div class="label">Bruto por corte</div>
+      <div class="chart" id="chart"></div>
+      <div class="chart-x" id="chartX"></div>
+      <div class="legend"><span><i></i>Anotado</span><span><i class="p"></i>Pagado según recibo</span></div>
+    </section>
+    <section class="card" id="cList"></section>
+    <p class="hint" style="padding:0 4px">Compara "Bruto anotado" con la columna <b>Bces / Acum</b> de "Horas Extras Normales" en tu recibo (lo acumulado del año).</p>
+  </main>
+
+  <!-- ============ AJUSTES ============ -->
+  <main class="view" id="v-ajustes" hidden>
+    <section class="card group">
+      <h3>Tu trabajo</h3>
+      <div class="set"><label for="c-salary">Salario mensual<small>Cambiarlo solo afecta lo que anotes después</small></label><span class="unit">RD$<input id="c-salary" data-cfg="salary" type="number" min="1" step="0.01" inputmode="decimal"></span></div>
+      <div class="set"><label for="c-jornada">Jornada normal semanal</label><span class="unit"><input id="c-jornada" data-cfg="jornada" type="number" min="1" max="80" step="0.5" inputmode="decimal">h</span></div>
+      <div class="set"><label for="c-salida">Hora normal de salida<small>Para calcular el extra con tu hora de salida</small></label><input id="c-salida" data-cfg="salida" type="time"></div>
+    </section>
+
+    <section class="card group">
+      <h3>Cálculo</h3>
+      <p class="gh">Ya vienen con lo que dice la ley y como redondea tu recibo. Cámbialos solo si tu empresa calcula distinto.</p>
+      <div class="set"><label for="c-divisor">Divisor del salario diario</label><input id="c-divisor" data-cfg="divisor" type="number" min="1" max="31" step="0.01" inputmode="decimal"></div>
+      <div class="set"><label for="c-horasDia">Horas de la jornada diaria</label><span class="unit"><input id="c-horasDia" data-cfg="horasDia" type="number" min="1" max="12" step="0.5" inputmode="decimal">h</span></div>
+      <div class="set"><label for="c-rec1">Recargo hora extra normal</label><span class="unit"><input id="c-rec1" data-cfg="rec1" type="number" min="0" max="300" step="1" inputmode="decimal">%</span></div>
+      <div class="set"><label for="c-rec2">Recargo feriado / exceso</label><span class="unit"><input id="c-rec2" data-cfg="rec2" type="number" min="0" max="300" step="1" inputmode="decimal">%</span></div>
+      <div class="set"><label for="c-limite">Límite semanal antes del recargo doble</label><span class="unit"><input id="c-limite" data-cfg="limite" type="number" min="1" max="120" step="1" inputmode="decimal">h</span></div>
+      <div class="rates" style="margin:6px 0 12px" id="rates"></div>
+    </section>
+
+    <section class="card group">
+      <h3>Cortes y pagos</h3>
+      <p class="gh">Ejemplo: corte el 8 y el 23; se paga el 15 y el 30.</p>
+      <div class="set"><label for="c-corte1">Primer corte (día)</label><input id="c-corte1" data-cfg="corte1" type="number" min="1" max="27" step="1" inputmode="numeric"></div>
+      <div class="set"><label for="c-corte2">Segundo corte (día)</label><input id="c-corte2" data-cfg="corte2" type="number" min="2" max="28" step="1" inputmode="numeric"></div>
+      <div class="set"><label for="c-pago1">Pago del corte que cierra el primer corte (día)</label><input id="c-pago1" data-cfg="pago1" type="number" min="1" max="31" step="1" inputmode="numeric"></div>
+      <div class="set"><label for="c-pago2">Pago del corte que cierra el segundo corte (día)</label><input id="c-pago2" data-cfg="pago2" type="number" min="1" max="31" step="1" inputmode="numeric"></div>
+    </section>
+
+    <section class="card group">
+      <h3>Descuentos en el neto</h3>
+      <div class="set"><label for="c-ded">Restar AFP y SFS a las horas extras<small>En tu recibo del 15/11/2026 no se los restaron</small></label><span class="toggle"><input id="c-ded" data-cfg="ded" type="checkbox"><span></span></span></div>
+      <div class="set"><label for="c-afp">AFP</label><span class="unit"><input id="c-afp" data-cfg="afp" type="number" min="0" max="20" step="0.01" inputmode="decimal">%</span></div>
+      <div class="set"><label for="c-sfs">SFS</label><span class="unit"><input id="c-sfs" data-cfg="sfs" type="number" min="0" max="20" step="0.01" inputmode="decimal">%</span></div>
+    </section>
+
+    <section class="card group">
+      <h3>Apariencia</h3>
+      <div class="set" style="grid-template-columns:1fr"><div class="seg" id="themeSeg" role="group" aria-label="Tema">
+        <button type="button" data-th="auto" aria-pressed="false">Automático</button>
+        <button type="button" data-th="light" aria-pressed="false">Claro</button>
+        <button type="button" data-th="dark" aria-pressed="false">Oscuro</button>
+      </div></div>
+    </section>
+
+    <section class="card group" style="padding-bottom:16px">
+      <h3>Tus datos</h3>
+      <p class="gh" id="storeMsg">Se guardan solo en este dispositivo. Descarga un respaldo de vez en cuando; con él pasas tus datos a otro teléfono.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px">
+        <button type="button" class="btn ghost sm" id="exportBtn"><svg class="ico"><use href="#i-dl"/></svg>Descargar</button>
+        <button type="button" class="btn ghost sm" id="importBtn"><svg class="ico"><use href="#i-up"/></svg>Cargar</button>
       </div>
-    </div>
-    <div class="field"><label class="label" for="fOut">O pon tu hora de salida</label><input type="time" id="fOut">
-      <p class="hint" id="outHint">Se resta tu hora normal de salida y se llenan las horas solas.</p></div>
-    <div class="field"><label class="label" for="fType">Tipo</label>
-      <select id="fType">
-        <option value="normal">Extra normal (+35%; pasa sola a +100% si superas 68 h en la semana)</option>
-        <option value="feriado">Feriado o día libre (+100%)</option>
-        <option value="exceso">Marcar al +100% a mano</option>
-      </select>
-    </div>
-    <div class="field"><label class="label" for="fNote">Nota (opcional)</label><input type="text" id="fNote" maxlength="80" placeholder="Ej. inventario, cubrí turno"></div>
-    <div class="preview" id="preview">Escribe horas y minutos para ver cuánto te toca.</div>
-    <div class="btns">
-      <button class="primary" type="submit" id="save">Guardar</button>
-      <button class="secondary" type="button" id="cancelEdit" hidden>Cancelar</button>
-    </div>
-    <p class="status" id="status">Conectando…</p>
-  </form>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+      <button type="button" class="btn ghost sm block" id="resetCalc" style="margin-top:10px">Restaurar cálculo a los valores de la ley</button>
+    </section>
+    <p class="fine" style="padding:0 6px">Código de Trabajo de RD: horas después de la jornada +35%; las que pasan de 68 h en la semana (lunes a domingo) +100%; día libre o feriado trabajado +100%. Se redondea como CCN: salario diario y hora normal a 2 decimales. No incluye recargo nocturno ni ISR. Es un estimado.</p>
+  </main>
 
-  <section>
-    <div class="label" style="margin:0 0 8px 4px">Registros de este corte</div>
-    <div class="list" id="list"><div class="empty">Aún no hay horas en este corte. Anota la primera arriba.</div></div>
-  </section>
-
-  <details id="yearBox">
-    <summary id="yearTitle">Resumen del año</summary>
-    <div class="dbody">
-      <div class="rates" id="yearRates"></div>
-      <p class="fine">Compara "Bruto anotado" con la columna "Bces / Acum" de "Horas Extras Normales" en tu recibo (es lo acumulado del año). Solo cuenta lo que anotaste en esta app.</p>
-    </div>
-  </details>
-
-  <details>
-    <summary>Ajustes y cómo se calcula</summary>
-    <div class="dbody">
-      <div class="row">
-        <div class="field"><label class="label" for="fSal">Salario mensual (RD$)</label><input type="number" id="fSal" min="1" step="0.01" inputmode="decimal"></div>
-        <div class="field"><label class="label" for="fJor">Jornada normal semanal (h)</label><input type="number" id="fJor" min="1" max="68" step="0.5" inputmode="decimal"></div>
-        <div class="field"><label class="label" for="fExit">Hora normal de salida</label><input type="time" id="fExit"></div>
-      </div>
-      <label class="check"><input type="checkbox" id="fDed"><span>Restar AFP (2.87%) y SFS (3.04%) a las horas extras en el neto. En tu recibo del 15/11/2026 no se las restaron: esos descuentos salieron solo del bono vacacional.</span></label>
-      <div class="rates">
-        <div><span>Salario diario (mensual ÷ 23.83)</span><span class="num" id="rDay"></span></div>
-        <div><span>Hora normal (diario ÷ 8)</span><span class="num" id="rHour"></span></div>
-        <div><span>Hora extra normal (×1.35)</span><span class="num" id="r135"></span></div>
-        <div><span>Hora al 100% (×2)</span><span class="num" id="r200"></span></div>
-        <div><span>Pasa a 100% después de</span><span class="num" id="rCap"></span></div>
-      </div>
-      <p class="fine">Se redondea igual que CCN: el salario diario y la hora normal a 2 decimales (RD$30,000 → 1,258.92 → 157.37 → 212.45 la hora extra). El recibo muestra las horas en decimal (7.74 h = 7 h 44 min). Puede haber 1 o 2 centavos de diferencia por redondeo.</p>
-      <p class="fine">Código de Trabajo: las horas después de la jornada se pagan +35%; las que pasan de 68 h en la semana, +100%; el día libre o feriado trabajado, +100%. La semana va de lunes a domingo. Corte del 9 al 23 se paga el 30; del 24 al 8 se paga el 15. No incluye recargo nocturno porque el turno termina antes de las 9:00 p.m., ni ISR. Cambiar el salario solo afecta lo que anotes después.</p>
-    </div>
-  </details>
-
-  <details>
-    <summary>Respaldo de tus datos</summary>
-    <div class="dbody">
-      <p class="fine">Tus horas y pagos se guardan solo en este navegador. Descarga un respaldo de vez en cuando, y úsalo para pasar tus datos a otro teléfono o navegador.</p>
-      <div class="backup">
-        <button type="button" class="secondary" id="exportBtn">Descargar respaldo</button>
-        <button type="button" class="secondary" id="importBtn">Cargar respaldo</button>
-        <input type="file" id="importFile" accept="application/json,.json" hidden>
-      </div>
-      <p class="status" id="backupMsg" aria-live="polite"></p>
-    </div>
-  </details>
+  <p class="foot">Que CCN no te robe · tus datos no salen de tu teléfono</p>
 </div>
 
+<button class="fab" id="fab" type="button" aria-label="Anotar horas extras"><svg class="ico"><use href="#i-plus"/></svg></button>
+
+<nav class="tabbar" aria-label="Secciones">
+  <button class="tab" data-tab="corte" aria-current="page" type="button"><svg class="ico"><use href="#i-clock"/></svg>Corte</button>
+  <button class="tab" data-tab="recibo" type="button"><svg class="ico"><use href="#i-receipt"/></svg>Recibo</button>
+  <button class="tab" data-tab="anio" type="button"><svg class="ico"><use href="#i-chart"/></svg>Año</button>
+  <button class="tab" data-tab="ajustes" type="button"><svg class="ico"><use href="#i-gear"/></svg>Ajustes</button>
+</nav>
+
+<!-- Hoja: anotar / editar horas -->
+<dialog class="sheet" id="eSheet" aria-labelledby="eTitle">
+  <div class="grab"></div>
+  <div class="sheet-h"><h2 id="eTitle">Anotar horas</h2><button class="iconbtn" type="button" data-close aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+  <form class="sheet-b" id="eForm" novalidate>
+    <div class="field"><label class="label" for="eDate">Fecha</label><input type="date" id="eDate" required></div>
+    <div class="timebox">
+      <div class="timebig num" id="eBig">0<span>h</span>00<span>min</span><small id="eDec">0.00 h en el recibo</small></div>
+      <div class="hm">
+        <input type="number" id="eH" min="0" max="16" inputmode="numeric" placeholder="Horas" aria-label="Horas">
+        <input type="number" id="eM" min="0" max="59" inputmode="numeric" placeholder="Minutos" aria-label="Minutos">
+      </div>
+      <div class="quick" aria-label="Sumar o restar tiempo">
+        <button type="button" data-add="-15">−15m</button><button type="button" data-add="15">+15m</button><button type="button" data-add="30">+30m</button><button type="button" data-add="60">+1h</button><button type="button" data-add="0">Borrar</button>
+      </div>
+      <div class="or">o con tu hora de salida</div>
+      <div class="outrow"><input type="time" id="eOut" aria-label="Hora a la que saliste"><span class="hint" id="eOutHint">Salida normal 6:00 p.m.</span></div>
+    </div>
+    <div class="field"><span class="label">Tipo</span>
+      <div class="seg" role="radiogroup" aria-label="Tipo">
+        <label><input type="radio" name="eType" value="normal" checked>Normal<small id="eTyN">+35%</small></label>
+        <label><input type="radio" name="eType" value="feriado">Feriado / libre<small id="eTyF">+100%</small></label>
+        <label><input type="radio" name="eType" value="exceso">100% a mano<small>forzar</small></label>
+      </div>
+    </div>
+    <div class="field"><label class="label" for="eNote">Nota</label><input type="text" id="eNote" maxlength="80" placeholder="Ej. inventario, cubrí turno"></div>
+    <details class="adv"><summary>Tarifa de este registro</summary>
+      <div class="field"><label class="label" for="eRate">Hora normal (RD$)</label><input type="number" id="eRate" min="1" step="0.01" inputmode="decimal"><p class="hint">Se guarda la tarifa del día en que anotas. Cámbiala solo si en esa fecha ganabas otro salario.</p></div>
+    </details>
+    <div class="prev"><div><div class="label">Te toca</div><div class="s" id="ePrevS">—</div></div><div class="v" id="ePrev">RD$0.00</div></div>
+    <p class="err" id="eErr" aria-live="polite"></p>
+    <div class="actions" id="eActions">
+      <button class="btn danger" type="button" id="eDel">Borrar</button>
+      <button class="btn primary" type="submit" id="eSave">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Hoja: línea del recibo -->
+<dialog class="sheet" id="pSheet" aria-labelledby="pTitle">
+  <div class="grab"></div>
+  <div class="sheet-h"><h2 id="pTitle">Línea del recibo</h2><button class="iconbtn" type="button" data-close aria-label="Cerrar"><svg class="ico"><use href="#i-x"/></svg></button></div>
+  <form class="sheet-b" id="pForm" novalidate>
+    <p class="hint">Copia una línea <b>"Horas Extras"</b> de tu recibo: la cantidad (columna Cant) y el monto (columna Ingresos).</p>
+    <div class="field"><label class="label" for="pLabel">Descripción</label><input type="text" id="pLabel" maxlength="40" placeholder="Horas Extras Normales (R)"></div>
+    <div class="hm">
+      <div class="field"><label class="label" for="pH">Cantidad (horas)</label><input type="number" id="pH" min="0" step="0.01" inputmode="decimal" placeholder="7.74"></div>
+      <div class="field"><label class="label" for="pAmt">Monto RD$</label><input type="number" id="pAmt" min="0" step="0.01" inputmode="decimal" placeholder="1644.36"></div>
+    </div>
+    <div class="prev"><div><div class="label">Tarifa que te pagaron</div><div class="s" id="pPrevS">monto ÷ horas</div></div><div class="v" id="pPrev">—</div></div>
+    <p class="err" id="pErr" aria-live="polite"></p>
+    <div class="actions" id="pActions">
+      <button class="btn danger" type="button" id="pDel">Quitar</button>
+      <button class="btn primary" type="submit">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn" hidden></button></div>
+
 <script>
-const DEFAULTS = {salary:30000, jornada:44, salida:"18:00", ded:false};
+// ===================== configuración =====================
+const LAW = {divisor:23.83, horasDia:8, rec1:35, rec2:100, limite:68, afp:2.87, sfs:3.04};
+const DEFAULTS = {salary:30000, jornada:44, salida:"18:00", ded:false, corte1:8, corte2:23, pago1:15, pago2:30, theme:"auto", ...LAW};
 const MAX_MIN = 16*60;
-const DED = 0.0287 + 0.0304;
-const TOL = 1;   // RD$ de tolerancia por redondeo al comparar con el recibo
-const TYPE_LBL = {normal:"+35%", exceso:"+100% a mano", feriado:"+100% feriado/libre"};
 const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const MES_L = ["E","F","M","A","M","J","J","A","S","O","N","D"];
 const DIAS = ["dom","lun","mar","mié","jue","vie","sáb"];
 
-let entries = [];   // {id,date:'YYYY-MM-DD',min,type,note,created,rate}
-let pagos = {};     // {periodKey:[{id,h,amt,created}]}
+let entries = [];   // {id,date,min,type,note,created,rate}
+let pagos = {};     // {periodKey:[{id,h,amt,label,created}]}
 let cfg = {...DEFAULTS};
 let col = null, settingsDoc = null, mode = "local";
-let editingId = null;
-let split = new Map();  // id -> {m35, m100}
+let split = new Map();
+let tab = "corte";
+let editingId = null, editingPay = null;
 
 const $ = id => document.getElementById(id);
 const r2 = n => Math.round((n + Number.EPSILON) * 100) / 100;
-const money = n => "RD$" + r2(n).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtN = n => r2(n).toLocaleString("es-DO",{minimumFractionDigits:2,maximumFractionDigits:2});
+const money = n => "RD$" + fmtN(n);
 const hm = m => `${Math.floor(m/60)} h ${String(m%60).padStart(2,"0")}`;
 const dec = m => r2(m/60).toFixed(2);
 const pad = n => String(n).padStart(2,"0");
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
 const toMin = t => { const [h,m] = String(t||"").split(":").map(Number); return Number.isFinite(h) ? h*60 + (m||0) : null; };
+const fmt12 = t => { const m = toMin(t); if (m == null) return "—"; const h = Math.floor(m/60); return `${((h+11)%12)+1}:${pad(m%60)} ${h<12?"a.m.":"p.m."}`; };
+const fmtD = d => `${d.getDate()} ${MESES[d.getMonth()]}`;
+function el(tag, cls, ...kids){ const n = document.createElement(tag); if (cls) n.className = cls; for (const k of kids) if (k != null) n.append(k); return n; }
+function icon(name, cls="ico"){ const s = document.createElementNS("http://www.w3.org/2000/svg","svg"); s.setAttribute("class", cls); const u = document.createElementNS("http://www.w3.org/2000/svg","use"); u.setAttribute("href", "#i-"+name); s.append(u); return s; }
 
-// Igual que CCN: diario y hora redondeados a 2 decimales.
-function daily(sal = cfg.salary){ return r2(sal/23.83); }
-function hourly(sal = cfg.salary){ return r2(daily(sal)/8); }
-function capMin(){ return Math.max(0, 68 - (Number(cfg.jornada)||44)) * 60; }
+// ===================== cálculo =====================
+const m1 = () => 1 + cfg.rec1/100, m2 = () => 1 + cfg.rec2/100;
+function daily(sal = cfg.salary){ return r2(sal/cfg.divisor); }
+function hourly(sal = cfg.salary){ return r2(daily(sal)/cfg.horasDia); }
+function capMin(){ return Math.max(0, cfg.limite - cfg.jornada) * 60; }
+const weekStart = s => { const d = parse(s); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return iso(d); };
 
-// Reparte cada registro entre +35% y +100% según lo acumulado en su semana (lunes a domingo).
+// Reparte cada registro entre recargo normal y doble según lo acumulado en su semana (lunes a domingo).
+let weekCum = new Map();
 function computeSplit(){
-  split = new Map();
-  const weekKey = s => { const d = parse(s); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return iso(d); };
+  split = new Map(); weekCum = new Map();
   const byWeek = new Map();
-  for (const e of entries){ const k = weekKey(e.date); if (!byWeek.has(k)) byWeek.set(k, []); byWeek.get(k).push(e); }
+  for (const e of entries){ const k = weekStart(e.date); if (!byWeek.has(k)) byWeek.set(k, []); byWeek.get(k).push(e); }
   const cap = capMin();
-  for (const list of byWeek.values()){
+  for (const [k, list] of byWeek){
     list.sort((a,b) => a.date.localeCompare(b.date) || (a.created||0)-(b.created||0));
     let cum = 0;
     for (const e of list){
-      if (e.type === "feriado"){ split.set(e.id, {m35:0, m100:e.min}); continue; }
-      if (e.type === "exceso"){ split.set(e.id, {m35:0, m100:e.min}); cum += e.min; continue; }
-      const m35 = Math.min(e.min, Math.max(0, cap - cum));
-      split.set(e.id, {m35, m100:e.min - m35}); cum += e.min;
+      if (e.type === "feriado"){ split.set(e.id, {a:0, b:e.min}); continue; }
+      if (e.type === "exceso"){ split.set(e.id, {a:0, b:e.min}); cum += e.min; continue; }
+      const a = Math.min(e.min, Math.max(0, cap - cum));
+      split.set(e.id, {a, b:e.min - a}); cum += e.min;
     }
+    weekCum.set(k, cum);
   }
 }
-function rateOf(e){ return Number(e.rate) || hourly(); }
-function amount(e){ const s = split.get(e.id) || {m35:e.min, m100:0}; return rateOf(e) * (s.m35/60*1.35 + s.m100/60*2); }
+const rateOf = e => Number(e.rate) || hourly();
+function amount(e){ const s = split.get(e.id) || {a:e.min, b:0}; return rateOf(e) * (s.a/60*m1() + s.b/60*m2()); }
 
-// Corte: 9–23 → pago día 30 (o último del mes); 24–8 → pago día 15 del mes siguiente al 24
+// Cortes configurables: (corte1+1 … corte2) se paga el pago2 del mismo mes; (corte2+1 … corte1 del mes siguiente) el pago1.
 function periodOf(dateStr){
+  const c1 = cfg.corte1, c2 = cfg.corte2;
   const d = parse(dateStr), y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
-  if (day >= 9 && day <= 23) return {key:`${y}-${pad(m+1)}-B`, start:new Date(y,m,9), end:new Date(y,m,23), pay:new Date(y,m,Math.min(30,new Date(y,m+1,0).getDate()))};
-  const sm = day >= 24 ? new Date(y,m,24) : new Date(y,m-1,24);
-  const em = new Date(sm.getFullYear(), sm.getMonth()+1, 8);
-  return {key:`${em.getFullYear()}-${pad(em.getMonth()+1)}-A`, start:sm, end:em, pay:new Date(em.getFullYear(),em.getMonth(),15)};
+  const last = (yy, mm) => new Date(yy, mm+1, 0).getDate();
+  if (day > c1 && day <= c2) return {key:`${y}-${pad(m+1)}-B`, start:new Date(y,m,c1+1), end:new Date(y,m,c2), pay:new Date(y,m,Math.min(cfg.pago2,last(y,m)))};
+  const start = day > c2 ? new Date(y,m,c2+1) : new Date(y,m-1,c2+1);
+  const end = new Date(start.getFullYear(), start.getMonth()+1, c1);
+  return {key:`${end.getFullYear()}-${pad(end.getMonth()+1)}-A`, start, end, pay:new Date(end.getFullYear(),end.getMonth(),Math.min(cfg.pago1,last(end.getFullYear(),end.getMonth())))};
 }
 function shiftPeriod(p, dir){ const ref = new Date(dir>0 ? p.end : p.start); ref.setDate(ref.getDate()+dir); return periodOf(iso(ref)); }
-const fmtD = d => `${d.getDate()} ${MESES[d.getMonth()]}`;
-
-let viewP = periodOf(iso(new Date()));
-
-function setStatus(text, ok){ const st = $("status"); st.textContent = text; st.className = ok ? "status ok" : "status"; }
-function el(tag, cls, text){ const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
-
-function periodSummary(key){
-  const items = entries.filter(e => periodOf(e.date).key === key);
-  let min = 0, m35 = 0, m100 = 0, gross = 0;
-  for (const e of items){ const s = split.get(e.id); min += e.min; m35 += s.m35; m100 += s.m100; gross += amount(e); }
-  const ps = pagos[key] || [];
-  return {items, min, m35, m100, gross:r2(gross), paidH:r2(ps.reduce((a,p)=>a+Number(p.h||0),0)), paidAmt:r2(ps.reduce((a,p)=>a+Number(p.amt||0),0)), pays:ps};
+function cortesOfYear(y){
+  const out = []; let p = periodOf(`${y}-01-01`);
+  while (p.end.getFullYear() < y) p = shiftPeriod(p, 1);
+  while (p.end.getFullYear() === y){ out.push(p); p = shiftPeriod(p, 1); }
+  return out;
 }
+
+function summary(key){
+  const items = entries.filter(e => periodOf(e.date).key === key);
+  let min = 0, a = 0, b = 0, gross = 0;
+  for (const e of items){ const s = split.get(e.id); min += e.min; a += s.a; b += s.b; gross += amount(e); }
+  const pays = pagos[key] || [];
+  return {items, min, a, b, gross:r2(gross), paidH:r2(pays.reduce((s,p)=>s+Number(p.h||0),0)), paidAmt:r2(pays.reduce((s,p)=>s+Number(p.amt||0),0)), pays};
+}
+// Estado del corte frente al recibo.
+function verdictOf(S, p){
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (!S.pays.length){
+    if (!S.min) return {k:"none", short:"Sin horas"};
+    const days = Math.round((p.pay - today)/864e5);
+    if (days > 0) return {k:"wait", short: days === 1 ? "Se paga mañana" : `Se paga en ${days} días`};
+    if (days === 0) return {k:"wait", short:"Se paga hoy"};
+    return {k:"warn", short:"Falta el recibo"};
+  }
+  const diff = r2(S.paidAmt - S.gross), dh = r2(S.paidH - r2(S.min/60));
+  // CCN cuenta en centésimas de hora y su reloj puede marcar un minuto distinto por día.
+  const tol = Math.max(1, r2(0.01 * (S.items.length + 1) * hourly() * m2()));
+  if (Math.abs(diff) <= tol) return {k:"ok", short:"Cuadra", diff, dh};
+  if (diff < 0) return {k:"bad", short:`Faltan ${money(-diff)}`, diff, dh};
+  return {k:"over", short:`Pagaron ${money(diff)} de más`, diff, dh};
+}
+
+// ===================== vistas =====================
+let viewP = periodOf(iso(new Date()));
+let viewYear = viewP.end.getFullYear();
 
 function render(){
   computeSplit();
-  const S = periodSummary(viewP.key);
-  $("range").textContent = `${fmtD(viewP.start)} – ${fmtD(viewP.end)} ${viewP.end.getFullYear()}`;
-  $("payDate").textContent = `${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]}`;
-  $("tTime").textContent = hm(S.min);
-  $("tDec").textContent = `${dec(S.min)} h en el recibo`;
-  $("tGross").textContent = money(S.gross);
-  $("tNetLbl").textContent = cfg.ded ? "Neto aprox." : "Neto (sin AFP/SFS)";
-  $("tNet").textContent = money(cfg.ded ? S.gross*(1-DED) : S.gross);
-  $("countLbl").textContent = S.items.length === 1 ? "1 registro" : `${S.items.length} registros`;
-  const tiers = $("tiers"); tiers.replaceChildren();
-  const tier = (lbl, m) => { const s = el("span"); s.append(lbl + ": ", el("b", "num", `${dec(m)} h`)); tiers.append(s); };
-  tier("Al 35%", S.m35); tier("Al 100%", S.m100);
-  tiers.hidden = !S.min;
-
-  renderRecon(S);
-
-  const list = $("list"); list.replaceChildren();
-  if (!S.items.length) list.append(el("div", "empty", "Aún no hay horas en este corte. Anota la primera arriba."));
-  S.items.sort((a,b) => b.date.localeCompare(a.date) || (b.created||0)-(a.created||0));
-  for (const e of S.items){
-    const d = parse(e.date), s = split.get(e.id);
-    const row = el("div", "item");
-    const day = el("div", "day"); day.append(el("b", null, d.getDate()), el("span", null, DIAS[d.getDay()]));
-    const info = el("div", "info");
-    const t = el("div", "t num", `${hm(e.min)} `); t.append(el("span", "num", `(${dec(e.min)} h)`));
-    let lbl = TYPE_LBL[e.type] || TYPE_LBL.normal;
-    if (e.type === "normal" && s.m100) lbl = s.m35 ? `${dec(s.m35)} h +35% · ${dec(s.m100)} h +100%` : "+100% (más de 68 h)";
-    t.append(el("span", "chip" + (s.m100 ? " x2" : ""), lbl));
-    info.append(t, el("div", "note", e.note || ""));
-    const right = el("div");
-    right.append(el("div", "amt", money(amount(e))));
-    const acts = el("div", "acts");
-    const ed = el("button", "link", "Editar"); ed.type = "button"; ed.addEventListener("click", () => startEdit(e));
-    const del = el("button", "link", "Borrar"); del.type = "button";
-    del.addEventListener("click", () => {
-      if (!del.classList.contains("confirm")){ del.classList.add("confirm"); del.textContent="¿Seguro? Toca otra vez"; setTimeout(()=>{del.classList.remove("confirm");del.textContent="Borrar";},3500); return; }
-      if (editingId === e.id) stopEdit();
-      removeEntry(e.id).catch(() => setStatus("No se pudo borrar. Revisa tu conexión e intenta de nuevo."));
-    });
-    acts.append(ed, del); right.append(acts);
-    row.append(day, info, right);
-    list.append(row);
-  }
-
-  const h = hourly();
-  $("rDay").textContent = money(daily()); $("rHour").textContent = money(h);
-  $("r135").textContent = money(h*1.35); $("r200").textContent = money(h*2);
-  $("rCap").textContent = `${capMin()/60} h extra en la semana`;
-  $("outHint").textContent = `Se resta tu hora normal de salida (${fmt12(cfg.salida)}) y se llenan las horas solas.`;
-  renderYear();
-  preview();
+  renderSwitch(); renderCorte(); renderRecibo(); renderYear(); renderSettings();
 }
 
-function fmt12(t){ const m = toMin(t); if (m == null) return "—"; const h = Math.floor(m/60), mm = m%60; return `${((h+11)%12)+1}:${pad(mm)} ${h<12?"a.m.":"p.m."}`; }
+function renderSwitch(){
+  $("range").textContent = `${fmtD(viewP.start)} – ${fmtD(viewP.end)}`;
+  $("rangeSub").textContent = `Se paga el ${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]} ${viewP.pay.getFullYear()}`;
+  $("goToday").hidden = viewP.key === periodOf(iso(new Date())).key;
+  $("switch").hidden = !(tab === "corte" || tab === "recibo");
+}
 
-function renderRecon(S){
-  const v = $("verdict"), cmp = $("cmp"), pl = $("paylist");
-  pl.replaceChildren(); cmp.replaceChildren();
-  const today = new Date(); today.setHours(0,0,0,0);
-  if (!S.pays.length){
-    cmp.hidden = true; v.className = "verdict";
-    if (!S.min) v.textContent = "No hay horas anotadas en este corte.";
-    else if (today < viewP.pay) v.textContent = `Te deben ${money(S.gross)} por ${dec(S.min)} h. Cuando llegue el recibo del ${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]}, anota aquí lo que te pagaron.`;
-    else v.textContent = `¿Ya te pagaron? Anota las horas y el monto de tu recibo para comprobar que te pagaron ${dec(S.min)} h (${money(S.gross)}).`;
-    return;
+function renderCorte(){
+  const S = summary(viewP.key), v = verdictOf(S, viewP);
+  const g = $("hGross"); g.replaceChildren(el("small", null, "RD$"), fmtN(S.gross));
+  $("hTime").textContent = hm(S.min); $("hDec").textContent = `${dec(S.min)} h`;
+  $("hNet").textContent = cfg.ded ? `Neto aprox. ${money(S.gross*(1-(cfg.afp+cfg.sfs)/100))}` : "Sin descuentos de AFP/SFS";
+  const pill = $("pill"); pill.className = "pill " + ({ok:"ok",bad:"bad",warn:"warn",wait:"wait",over:"warn"}[v.k]||""); pill.lastChild.textContent = v.short;
+  $("tl1").textContent = `Al ${cfg.rec1}%`; $("tl2").textContent = `Al ${cfg.rec2}%`;
+  $("t1").textContent = `${dec(S.a)} h`; $("t2").textContent = `${dec(S.b)} h`;
+  $("count").textContent = S.items.length === 1 ? "1 registro" : `${S.items.length} registros`;
+
+  // franja de días
+  const strip = $("strip"); strip.replaceChildren();
+  const perDay = new Map(), dbl = new Set();
+  for (const e of S.items){ perDay.set(e.date, (perDay.get(e.date)||0) + e.min); if (split.get(e.id).b) dbl.add(e.date); }
+  const max = Math.max(60, ...perDay.values());
+  const todayIso = iso(new Date());
+  for (let d = new Date(viewP.start); d <= viewP.end; d.setDate(d.getDate()+1)){
+    const k = iso(d), mins = perDay.get(k) || 0;
+    const b = el("button", (k === todayIso ? "today " : "") + (d.getDay() === 0 ? "wk" : ""));
+    b.type = "button"; b.setAttribute("aria-label", `${d.getDate()} ${MESES[d.getMonth()]}: ${mins ? hm(mins) : "sin horas"}. Anotar.`);
+    const bar = el("div", "bar" + (mins ? (dbl.has(k) ? " on x2" : " on") : "")); bar.style.height = mins ? `${Math.max(10, mins/max*100)}%` : "3px";
+    b.append(bar, el("span", "d", String(d.getDate())));
+    b.addEventListener("click", () => openEntry(null, k));
+    strip.append(b);
   }
-  cmp.hidden = false;
-  const c = (...xs) => xs.forEach(x => cmp.append(typeof x === "string" ? el("span", null, x) : x));
-  c(el("span"), el("span", "h", "Anotado"), el("span", "h", "Pagado"));
-  c("Horas", el("span", "num", dec(S.min)), el("span", "num", S.paidH.toFixed(2)));
-  c("Monto", el("span", "num", money(S.gross)), el("span", "num", money(S.paidAmt)));
-  const diff = r2(S.paidAmt - S.gross), dh = r2(S.paidH - r2(S.min/60));
-  // CCN cuenta en centésimas de hora (y su reloj puede marcar un minuto distinto por día):
-  // se acepta 0.01 h por día anotado + 0.01 h, valoradas al 100%.
-  const tol = Math.max(TOL, r2(0.01 * (S.items.length + 1) * hourly() * 2));
-  if (Math.abs(diff) <= tol){ v.className = "verdict ok"; v.replaceChildren("Cuadra. ", el("b", null, Math.abs(diff) > 0 ? `Diferencia de ${money(Math.abs(diff))} (${Math.abs(dh).toFixed(2)} h): redondeo o el reloj marcó un minuto distinto.` : "Exacto.")); }
-  else if (diff < 0){ v.className = "verdict bad"; v.replaceChildren("Te faltan ", el("b", "num", money(-diff)), dh < 0 ? ` (${(-dh).toFixed(2)} h sin pagar). Reclama con tu supervisor o en nómina; lleva esta lista.` : ". Las horas cuadran pero el monto no: revisa la tarifa con nómina."); }
-  else { v.className = "verdict"; v.replaceChildren("Te pagaron ", el("b", "num", money(diff)), dh > 0 ? ` de más (${dh.toFixed(2)} h). Quizás incluye horas de otro corte, o te faltó anotar algún día.` : " de más. Revisa si el recibo incluye otro concepto."); }
+
+  // registros por semana
+  const wrap = $("weeks"); wrap.replaceChildren();
+  if (!S.items.length){
+    const c = el("section", "card empty");
+    const ill = icon("clock"); ill.setAttribute("class", ""); ill.setAttribute("viewBox","0 0 24 24"); ill.setAttribute("fill","none"); ill.setAttribute("stroke","currentColor"); ill.setAttribute("stroke-width","1.4");
+    const b = el("button", "btn primary", icon("plus"), "Anotar horas"); b.type = "button"; b.addEventListener("click", () => openEntry());
+    c.append(ill, el("h3", null, "Aún no hay horas en este corte"), el("p", null, "Toca + o un día de la franja para anotar tu tiempo extra. La app calcula el 35% y el 100% sola."), b);
+    wrap.append(c); return;
+  }
+  const weeks = new Map();
+  for (const e of S.items){ const k = weekStart(e.date); if (!weeks.has(k)) weeks.set(k, []); weeks.get(k).push(e); }
+  const cap = capMin();
+  for (const k of [...weeks.keys()].sort().reverse()){
+    const list = weeks.get(k).sort((a,b) => b.date.localeCompare(a.date) || (b.created||0)-(a.created||0));
+    const ws = parse(k), we = new Date(ws); we.setDate(we.getDate()+6);
+    const from = ws < viewP.start ? viewP.start : ws, to = we > viewP.end ? viewP.end : we;
+    const wMin = list.reduce((s,e)=>s+e.min,0), wAmt = list.reduce((s,e)=>s+amount(e),0);
+    const cum = weekCum.get(k) || 0;
+    const card = el("section", "card week");
+    const h = el("div", "week-h");
+    h.append(el("div", "row1", el("span", "t", `Semana ${fmtD(from)} – ${fmtD(to)}`), el("span", "a", money(wAmt))));
+    const meter = el("div", "meter" + (cum > cap ? " over" : "")); const fill = el("span"); fill.style.width = `${Math.min(100, cap ? cum/cap*100 : 100)}%`; meter.append(fill);
+    meter.setAttribute("role","img"); meter.setAttribute("aria-label", `${dec(cum)} de ${cap/60} horas al ${cfg.rec1}% esta semana`);
+    h.append(meter, el("div", "m", el("span", "num", `${dec(wMin)} h en el recibo`), el("span", null, cum > cap ? `Pasaste ${cfg.limite} h: lo demás va al ${cfg.rec2}%` : `${dec(Math.max(0,cap-cum))} h más al ${cfg.rec1}%`)));
+    card.append(h);
+    for (const e of list){
+      const d = parse(e.date), s = split.get(e.id);
+      const row = el("button", "item"); row.type = "button"; row.setAttribute("aria-label", `Editar ${d.getDate()} ${MESES[d.getMonth()]}, ${hm(e.min)}`);
+      const day = el("div", "day", el("b", null, String(d.getDate())), el("span", null, DIAS[d.getDay()]));
+      const chips = el("div", "chips");
+      if (e.type === "feriado") chips.append(el("span", "chip x2", `Feriado/libre +${cfg.rec2}%`));
+      else if (e.type === "exceso") chips.append(el("span", "chip x2", `+${cfg.rec2}% a mano`));
+      else if (s.b && s.a) chips.append(el("span", "chip", `${dec(s.a)} h +${cfg.rec1}%`), el("span", "chip x2", `${dec(s.b)} h +${cfg.rec2}%`));
+      else if (s.b) chips.append(el("span", "chip x2", `+${cfg.rec2}% (pasó ${cfg.limite} h)`));
+      else chips.append(el("span", "chip", `+${cfg.rec1}%`));
+      const info = el("div", "info", el("div", "t", hm(e.min), el("span", null, `${dec(e.min)} h`)), chips);
+      if (e.note) info.append(el("div", "n", e.note));
+      row.append(day, info, el("div", "amt", money(amount(e)), el("small", null, `${fmtN(amount(e)/(e.min/60))}/h`)));
+      row.addEventListener("click", () => openEntry(e));
+      card.append(row);
+    }
+    wrap.append(card);
+  }
+}
+
+function renderRecibo(){
+  const S = summary(viewP.key), v = verdictOf(S, viewP);
+  const box = $("verdict"); box.replaceChildren();
+  let cls = "", ic = "receipt", title = "", text = "";
+  switch (v.k){
+    case "none": title = "Sin horas en este corte"; text = "Anota tus horas en la pestaña Corte."; break;
+    case "wait": cls = ""; title = `Te deben ${money(S.gross)}`; text = `${v.short} (${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]}). Cuando llegue el recibo, agrega aquí sus líneas de horas extras.`; break;
+    case "warn": cls = "warn"; ic = "alert"; title = "¿Ya te pagaron?"; text = `Agrega las líneas "Horas Extras" de tu recibo del ${viewP.pay.getDate()} de ${MESES[viewP.pay.getMonth()]} para comprobar los ${money(S.gross)} de ${dec(S.min)} h.`; break;
+    case "ok": cls = "ok"; ic = "check"; title = "Cuadra. Te pagaron bien."; text = Math.abs(v.diff) ? `Diferencia de ${money(Math.abs(v.diff))} (${Math.abs(v.dh).toFixed(2)} h): redondeo o el reloj marcó un minuto distinto.` : "Exacto al centavo."; break;
+    case "bad": cls = "bad"; ic = "alert"; title = `Te faltan ${money(-v.diff)}`; text = v.dh < 0 ? `Faltan ${(-v.dh).toFixed(2)} h por pagar. Reclama en nómina y lleva la tabla de semanas de abajo.` : "Las horas cuadran pero el monto no: pregunta en nómina qué tarifa usaron."; break;
+    case "over": cls = "warn"; ic = "alert"; title = `Te pagaron ${money(v.diff)} de más`; text = v.dh > 0 ? `Son ${v.dh.toFixed(2)} h más de las que anotaste. ¿Se te olvidó anotar un día, o el recibo trae horas de otro corte?` : "Revisa si el recibo incluye otro concepto."; break;
+  }
+  box.className = "verdict " + cls;
+  box.append(el("div", "vt", el("span", "vi", icon(ic)), title), el("p", null, text));
+
+  const tb = $("cmpBody"); tb.replaceChildren();
+  const tr = (cells, cls) => { const r = el("tr", cls); cells.forEach((c,i) => r.append(el("td", i ? "num " + (c.cls||"") : null, c.t ?? c))); tb.append(r); };
+  const dH = r2(S.paidH - r2(S.min/60)), dA = r2(S.paidAmt - S.gross), has = S.pays.length > 0;
+  const sg = n => (n > 0 ? "+" : n < 0 ? "−" : "") ;
+  tr(["Horas", dec(S.min), has ? S.paidH.toFixed(2) : "—", {t: has ? sg(dH) + Math.abs(dH).toFixed(2) : "—", cls: has && dH ? (dH > 0 ? "pos" : "neg") : ""}]);
+  tr(["RD$", fmtN(S.gross), has ? fmtN(S.paidAmt) : "—", {t: has ? sg(dA) + fmtN(Math.abs(dA)) : "—", cls: has && dA ? (dA > 0 ? "pos" : "neg") : ""}], "tot");
+
+  const pl = $("payList"); pl.replaceChildren();
+  if (!S.pays.length){ const e = el("div", "empty", el("p", null, "Aún no agregas líneas del recibo para este corte.")); const b = el("button", "btn primary sm", icon("plus"), "Agregar línea"); b.type = "button"; b.addEventListener("click", () => openPay()); e.append(b); pl.append(e); }
   for (const p of S.pays){
-    const row = el("div", "payrow");
-    const l = el("span"); l.append(el("span", "num", `${Number(p.h).toFixed(2)} h · ${money(Number(p.amt))}`));
-    if (p.h > 0) l.append(el("span", "m", `  (${money(Number(p.amt)/Number(p.h))}/h)`));
-    const b = el("button", "link", "Quitar"); b.type = "button";
-    b.addEventListener("click", () => { pagos[viewP.key] = (pagos[viewP.key]||[]).filter(x => x.id !== p.id); if (!pagos[viewP.key].length) delete pagos[viewP.key]; saveCfg(); });
-    row.append(l, b); pl.append(row);
+    const row = el("button", "payrow"); row.type = "button";
+    row.append(el("div", null, el("div", "l", p.label || "Horas Extras"), el("div", "s num", `${Number(p.h).toFixed(2)} h · ${p.h > 0 ? money(p.amt/p.h) + "/h" : "—"}`)), el("div", "amt", money(p.amt)));
+    row.addEventListener("click", () => openPay(p));
+    pl.append(row);
   }
+
+  const wb = $("wkBody"); wb.replaceChildren();
+  const weeks = new Map();
+  for (const e of S.items){ const k = weekStart(e.date); const w = weeks.get(k) || {min:0, amt:0}; w.min += e.min; w.amt += amount(e); weeks.set(k, w); }
+  for (const k of [...weeks.keys()].sort()){
+    const w = weeks.get(k), ws = parse(k), we = new Date(ws); we.setDate(we.getDate()+6);
+    const from = ws < viewP.start ? viewP.start : ws, to = we > viewP.end ? viewP.end : we;
+    const r = el("tr"); r.append(el("td", null, `${fmtD(from)} – ${fmtD(to)}`), el("td", "num", dec(w.min)), el("td", "num", money(w.amt))); wb.append(r);
+  }
+  if (!weeks.size){ const r = el("tr"); const td = el("td", null, "Sin horas anotadas"); td.colSpan = 3; td.style.textAlign = "left"; td.className = "muted"; r.append(td); wb.append(r); }
 }
 
 function renderYear(){
-  const y = viewP.end.getFullYear();
-  $("yearTitle").textContent = `Resumen ${y}`;
-  const keys = new Set(entries.filter(e => e.date.startsWith(y+"-")).map(e => periodOf(e.date).key));
-  Object.keys(pagos).forEach(k => { if (k.startsWith(y+"-")) keys.add(k); });
-  let min = 0, gross = 0, paidAmt = 0, cortes = 0;
-  for (const k of keys){ if (!k.startsWith(y+"-")) continue; const S = periodSummary(k); min += S.min; gross += S.gross; paidAmt += S.paidAmt; cortes++; }
-  const box = $("yearRates"); box.replaceChildren();
-  const line = (a, b) => { const d = el("div"); d.append(el("span", null, a), el("span", "num", b)); box.append(d); };
-  line("Cortes con horas", String(cortes));
-  line("Horas anotadas", `${hm(min)} (${dec(min)} h)`);
-  line("Bruto anotado", money(gross));
-  line("Pagado según recibos anotados", money(paidAmt));
+  $("yLbl").textContent = String(viewYear);
+  const cs = cortesOfYear(viewYear).map(p => ({p, S:summary(p.key)}));
+  let min = 0, gross = 0, paid = 0, paidOn = 0;
+  for (const c of cs){ min += c.S.min; gross += c.S.gross; paid += c.S.paidAmt; if (c.S.pays.length) paidOn += c.S.gross; }
+  $("kGross").textContent = money(gross); $("kHours").textContent = `${dec(min)} h`; $("kPaid").textContent = money(paid);
+  const diff = r2(paid - paidOn); const kd = $("kDiff");
+  kd.textContent = paid ? (diff >= 0 ? "+" : "−") + money(Math.abs(diff)) : "—"; kd.className = paid ? (diff < -1 ? "neg" : "pos") : "";
+  kd.title = "Pagado menos lo anotado, solo en cortes con recibo";
+
+  const ch = $("chart"); ch.replaceChildren();
+  const max = Math.max(1, ...cs.map(c => Math.max(c.S.gross, c.S.paidAmt)));
+  for (const c of cs){
+    const b = el("button"); b.type = "button";
+    b.setAttribute("aria-label", `${fmtD(c.p.start)} – ${fmtD(c.p.end)}: ${money(c.S.gross)} anotado${c.S.pays.length ? ", " + money(c.S.paidAmt) + " pagado" : ""}`);
+    b.title = b.getAttribute("aria-label");
+    const bar = el("div", "b" + (c.S.gross ? " on" : "") + (c.p.key === viewP.key ? " sel" : "")); bar.style.height = c.S.gross ? `${Math.max(4, c.S.gross/max*100)}%` : "3px";
+    b.append(bar);
+    if (c.S.pays.length){ const pm = el("i", "p"); pm.style.bottom = `calc(${c.S.paidAmt/max*100}% - 1px)`; b.append(pm); }
+    b.addEventListener("click", () => { viewP = c.p; setTab("corte"); });
+    ch.append(b);
+  }
+  const cx = $("chartX"); cx.replaceChildren(...MES_L.map(m => el("span", null, m)));
+
+  const cl = $("cList"); cl.replaceChildren();
+  const withData = cs.filter(c => c.S.min || c.S.pays.length).reverse();
+  if (!withData.length) cl.append(el("div", "empty", el("p", null, `Sin horas anotadas en ${viewYear}.`)));
+  for (const c of withData){
+    const v = verdictOf(c.S, c.p);
+    const row = el("button", "crow"); row.type = "button";
+    row.append(el("div", null, el("div", "r", `${fmtD(c.p.start)} – ${fmtD(c.p.end)}`), el("div", "s num", `${dec(c.S.min)} h · pago ${fmtD(c.p.pay)}`)),
+      el("span", "tag " + ({ok:"ok",bad:"bad",warn:"warn",over:"warn"}[v.k]||""), v.short), el("div", "amt", money(c.S.gross)));
+    row.addEventListener("click", () => { viewP = c.p; setTab("corte"); });
+    cl.append(row);
+  }
 }
 
-function formEntry(){
-  const H = Math.max(0, parseInt($("fH").value||"0",10) || 0), M = Math.max(0, Math.min(59, parseInt($("fM").value||"0",10) || 0));
-  return {date:$("fDate").value, min:Math.min(MAX_MIN, H*60 + M), type:$("fType").value, note:$("fNote").value.trim()};
-}
-function preview(){
-  const e = formEntry();
-  if (!e.min){ $("preview").textContent = "Escribe horas y minutos para ver cuánto te toca."; return; }
-  const mult = e.type === "normal" ? 1.35 : 2;
-  const val = (editingId ? rateOf(entries.find(x => x.id === editingId) || {}) : hourly()) * e.min/60 * mult;
-  const p = $("preview"); p.replaceChildren("Te toca ", el("b", "num", money(val)), " por ", el("b", "num", `${hm(e.min)} (${dec(e.min)} h)`), e.type === "normal" ? " al 35%." : " al 100%.");
-  if (formEntry().min >= MAX_MIN) p.append(" Máximo 16 h por registro.");
+function renderSettings(){
+  for (const inp of document.querySelectorAll("[data-cfg]")){
+    if (inp === document.activeElement) continue;
+    const k = inp.dataset.cfg;
+    if (inp.type === "checkbox") inp.checked = !!cfg[k]; else inp.value = cfg[k];
+  }
+  const h = hourly();
+  const r = $("rates"); r.replaceChildren();
+  for (const [a, b] of [["Salario diario", money(daily())], ["Hora normal", money(h)], [`Hora extra (+${cfg.rec1}%)`, money(h*m1())], [`Hora al +${cfg.rec2}%`, money(h*m2())], ["Pasa al recargo doble después de", `${capMin()/60} h extra/semana`]])
+    r.append(el("div", null, el("span", null, a), el("span", "num", b)));
+  for (const b of document.querySelectorAll("#themeSeg button")) b.setAttribute("aria-pressed", String(b.dataset.th === cfg.theme));
+  $("eTyN").textContent = `+${cfg.rec1}%`; $("eTyF").textContent = `+${cfg.rec2}%`;
 }
 
-$("fOut").addEventListener("input", () => {
-  const out = toMin($("fOut").value), base = toMin(cfg.salida);
+// ===================== pestañas y tema =====================
+function setTab(t){
+  tab = t;
+  for (const v of ["corte","recibo","anio","ajustes"]) $("v-"+v).hidden = v !== t;
+  for (const b of document.querySelectorAll(".tab")) b.toggleAttribute("aria-current", b.dataset.tab === t), b.dataset.tab === t && b.setAttribute("aria-current","page");
+  $("fab").hidden = !(t === "corte");
+  if (t === "anio") viewYear = viewP.end.getFullYear();
+  render(); window.scrollTo({top:0});
+}
+for (const b of document.querySelectorAll(".tab")) b.addEventListener("click", () => setTab(b.dataset.tab));
+
+function applyTheme(){
+  const t = cfg.theme;
+  if (t === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.dataset.theme = t;
+  const dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.querySelector('meta[name="theme-color"]').content = dark ? "#0d0d0f" : "#f3efe8";
+  $("themeBtn").replaceChildren(icon(t === "auto" ? "auto" : t === "dark" ? "moon" : "sun"));
+  $("themeBtn").setAttribute("aria-label", `Tema: ${t === "auto" ? "automático" : t === "dark" ? "oscuro" : "claro"}. Cambiar.`);
+}
+$("themeBtn").addEventListener("click", () => { cfg.theme = {auto:"light", light:"dark", dark:"auto"}[cfg.theme] || "auto"; applyTheme(); saveCfg(); toast(`Tema ${cfg.theme === "auto" ? "automático" : cfg.theme === "dark" ? "oscuro" : "claro"}`); });
+for (const b of document.querySelectorAll("#themeSeg button")) b.addEventListener("click", () => { cfg.theme = b.dataset.th; applyTheme(); saveCfg(); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+
+$("prev").addEventListener("click", () => { viewP = shiftPeriod(viewP,-1); render(); });
+$("next").addEventListener("click", () => { viewP = shiftPeriod(viewP,1); render(); });
+$("goToday").addEventListener("click", () => { viewP = periodOf(iso(new Date())); render(); });
+$("yPrev").addEventListener("click", () => { viewYear--; renderYear(); });
+$("yNext").addEventListener("click", () => { viewYear++; renderYear(); });
+
+// ===================== aviso con deshacer =====================
+let toastT;
+function toast(msg, label, fn){
+  $("toastMsg").textContent = msg;
+  const b = $("toastBtn"); b.hidden = !label; b.textContent = label || ""; b.onclick = () => { $("toast").classList.remove("show"); fn && fn(); };
+  $("toast").classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => $("toast").classList.remove("show"), label ? 6000 : 2600);
+}
+
+// ===================== hoja: horas =====================
+function sheetSetup(d){
+  d.addEventListener("click", ev => { if (ev.target === d) d.close(); });
+  for (const b of d.querySelectorAll("[data-close]")) b.addEventListener("click", () => d.close());
+}
+sheetSetup($("eSheet")); sheetSetup($("pSheet"));
+
+const eMin = () => { const H = Math.max(0, parseInt($("eH").value||"0",10)||0), M = Math.max(0, Math.min(59, parseInt($("eM").value||"0",10)||0)); return Math.min(MAX_MIN, H*60+M); };
+const eType = () => document.querySelector('input[name="eType"]:checked').value;
+function setEMin(m){ m = Math.max(0, Math.min(MAX_MIN, m)); $("eH").value = m ? Math.floor(m/60) : ""; $("eM").value = m ? m%60 : ""; ePreview(); }
+function ePreview(){
+  const m = eMin(), t = eType();
+  $("eBig").replaceChildren(String(Math.floor(m/60)), el("span", null, "h"), pad(m%60), el("span", null, "min"), el("small", null, `${dec(m)} h en el recibo`));
+  const rate = Number($("eRate").value) || hourly();
+  const mult = t === "normal" ? m1() : m2();
+  $("ePrev").textContent = money(rate * m/60 * mult);
+  $("ePrevS").textContent = `${money(rate)}/h × ${t === "normal" ? "+" + cfg.rec1 : "+" + cfg.rec2}%` + (t === "normal" ? ` · pasa al +${cfg.rec2}% si superas ${cfg.limite} h/semana` : "");
+  $("eErr").textContent = m >= MAX_MIN ? "Máximo 16 h por registro." : "";
+}
+function openEntry(e, date){
+  editingId = e ? e.id : null;
+  $("eTitle").textContent = e ? "Editar horas" : "Anotar horas";
+  $("eDate").value = e ? e.date : (date || iso(new Date()));
+  setEMin(e ? e.min : 0);
+  for (const r of document.querySelectorAll('input[name="eType"]')) r.checked = r.value === (e ? e.type : "normal");
+  $("eNote").value = e ? (e.note||"") : ""; $("eOut").value = "";
+  $("eRate").value = e ? r2(rateOf(e)) : hourly(); $("eRate").placeholder = hourly();
+  $("eOutHint").textContent = `Salida normal ${fmt12(cfg.salida)}`;
+  $("eDel").hidden = !e; $("eActions").classList.toggle("one", !e);
+  $("eSave").textContent = e ? "Guardar cambios" : "Guardar";
+  $("eErr").textContent = "";
+  ePreview(); $("eSheet").showModal();
+  if (!e) setTimeout(() => $("eH").focus(), 60);
+}
+$("fab").addEventListener("click", () => openEntry(null, viewP.start <= new Date() && new Date() <= new Date(viewP.end.getTime()+864e5) ? iso(new Date()) : iso(viewP.end)));
+["eH","eM","eRate"].forEach(id => $(id).addEventListener("input", ePreview));
+for (const r of document.querySelectorAll('input[name="eType"]')) r.addEventListener("change", ePreview);
+for (const b of document.querySelectorAll("[data-add]")) b.addEventListener("click", () => { const a = Number(b.dataset.add); setEMin(a === 0 ? 0 : eMin() + a); });
+$("eOut").addEventListener("input", () => {
+  const out = toMin($("eOut").value), base = toMin(cfg.salida);
   if (out == null || base == null) return;
-  let diff = out - base; if (diff < 0) diff += 24*60;   // pasó de medianoche
-  if (diff > MAX_MIN){ $("outHint").textContent = "Esa hora da más de 16 h extra; revisa la hora."; return; }
-  $("fH").value = Math.floor(diff/60); $("fM").value = diff%60; preview();
+  let diff = out - base; if (diff < 0) diff += 24*60;
+  if (diff > MAX_MIN){ $("eErr").textContent = "Esa hora da más de 16 h extra; revísala."; return; }
+  setEMin(diff);
+});
+$("eForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const date = $("eDate").value, min = eMin();
+  if (!date){ $("eErr").textContent = "Elige la fecha."; return; }
+  if (!min){ $("eErr").textContent = "Escribe al menos 1 minuto de tiempo extra."; return; }
+  const rate = Number($("eRate").value) > 0 ? r2(Number($("eRate").value)) : hourly();
+  const data = {date, min, type:eType(), note:$("eNote").value.trim(), rate};
+  $("eSave").disabled = true;
+  try{
+    if (editingId) await updateEntry(editingId, data); else await addEntry(data);
+    $("eSheet").close();
+    viewP = periodOf(date); render();
+    toast(editingId ? "Cambios guardados" : `Guardado: ${hm(min)}`);
+  }catch(_){ $("eErr").textContent = "No se pudo guardar. Revisa tu conexión e intenta de nuevo."; }
+  $("eSave").disabled = false;
+});
+$("eDel").addEventListener("click", async () => {
+  const e = entries.find(x => x.id === editingId); if (!e) return;
+  $("eSheet").close();
+  try{
+    await removeEntry(e.id);
+    toast(`Borrado ${hm(e.min)} del ${fmtD(parse(e.date))}`, "Deshacer", () => { const {id, ...rest} = e; addEntry(rest, e.created).then(render); });
+  }catch(_){ toast("No se pudo borrar. Revisa tu conexión."); }
 });
 
-function startEdit(e){
-  editingId = e.id;
-  $("fDate").value = e.date; $("fH").value = Math.floor(e.min/60); $("fM").value = e.min%60;
-  $("fType").value = e.type in TYPE_LBL ? e.type : "normal"; $("fNote").value = e.note || ""; $("fOut").value = "";
-  $("formTitle").textContent = "Editar registro"; $("save").textContent = "Guardar cambios";
-  $("cancelEdit").hidden = false; $("f").classList.add("editing");
-  $("f").scrollIntoView({behavior:"smooth", block:"start"}); preview();
+// ===================== hoja: línea del recibo =====================
+function pPreview(){ const h = Number($("pH").value), a = Number($("pAmt").value); $("pPrev").textContent = h > 0 && a > 0 ? money(a/h) + "/h" : "—"; $("pPrevS").textContent = h > 0 && a > 0 ? `Tu tarifa en la app: ${money(hourly()*m1())}/h al ${cfg.rec1}%` : "monto ÷ horas"; }
+function openPay(p){
+  editingPay = p ? p.id : null;
+  $("pTitle").textContent = p ? "Editar línea" : "Línea del recibo";
+  $("pLabel").value = p ? (p.label||"") : ""; $("pH").value = p ? p.h : ""; $("pAmt").value = p ? p.amt : "";
+  $("pDel").hidden = !p; $("pActions").classList.toggle("one", !p); $("pErr").textContent = "";
+  pPreview(); $("pSheet").showModal();
 }
-function stopEdit(){
-  editingId = null;
-  $("formTitle").textContent = "Anotar horas extras"; $("save").textContent = "Guardar";
-  $("cancelEdit").hidden = true; $("f").classList.remove("editing");
-  $("fH").value = ""; $("fM").value = ""; $("fNote").value = ""; $("fOut").value = ""; $("fType").value = "normal"; preview();
-}
-$("cancelEdit").addEventListener("click", stopEdit);
+$("addPay").addEventListener("click", () => openPay());
+["pH","pAmt"].forEach(id => $(id).addEventListener("input", pPreview));
+$("pForm").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const h = r2(parseFloat($("pH").value)), amt = r2(parseFloat($("pAmt").value));
+  if (!(h >= 0) || !(amt > 0)){ $("pErr").textContent = "Escribe la cantidad de horas y el monto tal como salen en el recibo."; return; }
+  const list = pagos[viewP.key] = pagos[viewP.key] || [];
+  const label = $("pLabel").value.trim();
+  if (editingPay){ const p = list.find(x => x.id === editingPay); if (p) Object.assign(p, {h, amt, label}); }
+  else list.push({id:"p"+Date.now(), h, amt, label, created:Date.now()});
+  $("pSheet").close(); saveCfg(); toast(editingPay ? "Línea actualizada" : "Línea agregada");
+});
+$("pDel").addEventListener("click", () => {
+  const key = viewP.key, list = pagos[key] || [], idx = list.findIndex(x => x.id === editingPay); if (idx < 0) return;
+  const [gone] = list.splice(idx, 1); if (!list.length) delete pagos[key];
+  $("pSheet").close(); saveCfg();
+  toast("Línea quitada", "Deshacer", () => { (pagos[key] = pagos[key] || []).splice(idx, 0, gone); saveCfg(); });
+});
 
-// ---- almacenamiento ----
+// ===================== ajustes =====================
+const RULES = {
+  salary:v => v > 0, jornada:v => v > 0 && v <= 80, divisor:v => v > 0 && v <= 31, horasDia:v => v > 0 && v <= 24,
+  rec1:v => v >= 0 && v <= 300, rec2:v => v >= 0 && v <= 300, limite:v => v > 0 && v <= 168,
+  corte1:v => Number.isInteger(v) && v >= 1 && v < cfg.corte2, corte2:v => Number.isInteger(v) && v > cfg.corte1 && v <= 28,
+  pago1:v => Number.isInteger(v) && v >= 1 && v <= 31, pago2:v => Number.isInteger(v) && v >= 1 && v <= 31,
+  afp:v => v >= 0 && v <= 20, sfs:v => v >= 0 && v <= 20,
+};
+for (const inp of document.querySelectorAll("[data-cfg]")){
+  inp.addEventListener("change", () => {
+    const k = inp.dataset.cfg;
+    if (inp.type === "checkbox"){ cfg[k] = inp.checked; saveCfg(); return; }
+    if (inp.type === "time"){ if (inp.value){ cfg[k] = inp.value; saveCfg(); toast("Guardado"); } return; }
+    const v = Number(inp.value);
+    if (inp.value === "" || !RULES[k] || !RULES[k](v)){ inp.value = cfg[k]; toast(k.startsWith("corte") ? "El primer corte debe ser antes del segundo (máximo día 28)." : "Valor no válido; se dejó el anterior."); return; }
+    cfg[k] = v;
+    if (k.startsWith("corte")) viewP = periodOf(iso(new Date()));
+    saveCfg(); toast("Guardado");
+  });
+}
+$("resetCalc").addEventListener("click", () => {
+  const before = {...cfg};
+  Object.assign(cfg, LAW); saveCfg();
+  toast("Cálculo restaurado", "Deshacer", () => { Object.assign(cfg, before); saveCfg(); });
+});
+
+// ===================== almacenamiento =====================
 // Fuera de claude.ai (p. ej. GitHub Pages) se guarda en localStorage de este navegador.
 const LS = "horas-extras-v1";
+function sanitizeCfg(c){
+  const out = {...DEFAULTS};
+  for (const k of Object.keys(DEFAULTS)){
+    if (!(k in (c||{}))) continue;
+    const v = c[k];
+    if (typeof DEFAULTS[k] === "number"){ if (Number.isFinite(Number(v))) out[k] = Number(v); }
+    else if (typeof DEFAULTS[k] === "boolean") out[k] = !!v;
+    else if (typeof v === "string") out[k] = v;
+  }
+  if (!(out.corte1 >= 1 && out.corte1 < out.corte2 && out.corte2 <= 28)){ out.corte1 = DEFAULTS.corte1; out.corte2 = DEFAULTS.corte2; }
+  if (!["auto","light","dark"].includes(out.theme)) out.theme = "auto";
+  return out;
+}
 function lsLoad(){
   try{
     const s = JSON.parse(localStorage.getItem(LS)||"{}");
     entries = Array.isArray(s.entries) ? s.entries : [];
-    cfg = {...DEFAULTS, ...(s.cfg||{})};
-    if (Number(s.salary) && !(s.cfg && s.cfg.salary)) cfg.salary = Number(s.salary);   // formato viejo
+    cfg = sanitizeCfg({...(s.cfg||{}), ...(Number(s.salary) && !(s.cfg && s.cfg.salary) ? {salary:Number(s.salary)} : {})});
     pagos = s.pagos && typeof s.pagos === "object" ? s.pagos : {};
     let fixed = false;
     for (const e of entries) if (!Number(e.rate)) { e.rate = hourly(); fixed = true; }
@@ -474,10 +989,10 @@ function lsLoad(){
 }
 function lsSave(){ try{ localStorage.setItem(LS, JSON.stringify({entries, cfg, pagos, salary:cfg.salary})); }catch(_){} }
 
-async function addEntry(e){
-  e.created = Date.now(); e.rate = hourly();
+async function addEntry(e, created){
+  e.created = created || Date.now(); if (!Number(e.rate)) e.rate = hourly();
   if (mode === "db"){ await col.add(e); }
-  else { e.id = "l"+e.created; entries.push(e); lsSave(); render(); }
+  else { e.id = "l"+e.created+Math.random().toString(36).slice(2,6); entries.push(e); lsSave(); render(); }
 }
 async function updateEntry(id, patch){
   if (mode === "db"){ await col.doc(id).update(patch); }
@@ -489,87 +1004,51 @@ async function removeEntry(id){
 }
 async function saveCfg(){
   render();
-  if (mode === "db") { try{ await settingsDoc.set({...cfg, pagos}); }catch(_){ setStatus("No se pudo guardar el ajuste. Revisa tu conexión."); } }
+  if (mode === "db") { try{ await settingsDoc.set({...cfg, pagos}); }catch(_){ toast("No se pudo guardar. Revisa tu conexión."); } }
   else lsSave();
 }
 
-$("f").addEventListener("submit", async ev => {
-  ev.preventDefault();
-  const e = formEntry();
-  if (!e.date){ setStatus("Elige la fecha."); return; }
-  if (!e.min){ setStatus("Escribe al menos 1 minuto de tiempo extra."); return; }
-  $("save").disabled = true;
-  try{
-    if (editingId){ await updateEntry(editingId, e); setStatus("Cambios guardados.", true); stopEdit(); }
-    else { await addEntry(e); setStatus("Guardado.", true); $("fH").value = ""; $("fM").value = ""; $("fNote").value = ""; $("fOut").value = ""; }
-    viewP = periodOf(e.date);
-    render();
-  }catch(err){ setStatus("No se pudo guardar. Revisa tu conexión e intenta de nuevo."); }
-  $("save").disabled = false;
-});
-["fH","fM","fType","fDate"].forEach(id => $(id).addEventListener("input", preview));
-
-$("pAdd").addEventListener("click", () => {
-  const h = r2(parseFloat($("pH").value)), amt = r2(parseFloat($("pAmt").value));
-  if (!(h >= 0) || !(amt > 0)){ $("verdict").className = "verdict bad"; $("verdict").textContent = "Escribe las horas y el monto tal como salen en el recibo."; return; }
-  (pagos[viewP.key] = pagos[viewP.key] || []).push({id:"p"+Date.now(), h, amt, created:Date.now()});
-  $("pH").value = ""; $("pAmt").value = "";
-  saveCfg();
-});
-
-$("fSal").addEventListener("change", () => { const v = parseFloat($("fSal").value); if (v > 0){ cfg.salary = v; saveCfg(); } });
-$("fJor").addEventListener("change", () => { const v = parseFloat($("fJor").value); if (v > 0 && v <= 68){ cfg.jornada = v; saveCfg(); } });
-$("fExit").addEventListener("change", () => { if ($("fExit").value){ cfg.salida = $("fExit").value; saveCfg(); } });
-$("fDed").addEventListener("change", () => { cfg.ded = $("fDed").checked; saveCfg(); });
-function fillCfg(){ $("fSal").value = cfg.salary; $("fJor").value = cfg.jornada; $("fExit").value = cfg.salida; $("fDed").checked = !!cfg.ded; }
-
-$("prev").addEventListener("click", () => { viewP = shiftPeriod(viewP,-1); render(); });
-$("next").addEventListener("click", () => { viewP = shiftPeriod(viewP,1); render(); });
-
-// ---- respaldo ----
+// ===================== respaldo =====================
 $("exportBtn").addEventListener("click", () => {
-  const data = {app:"horas-extras", version:2, exported:new Date().toISOString(), cfg, salary:cfg.salary, entries, pagos};
+  const data = {app:"horas-extras", version:3, exported:new Date().toISOString(), cfg, salary:cfg.salary, entries, pagos};
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `horas-extras-respaldo-${iso(new Date())}.json`;
-  document.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  $("backupMsg").textContent = `Respaldo descargado (${entries.length} registros).`;
+  a.href = URL.createObjectURL(blob); a.download = `horas-extras-respaldo-${iso(new Date())}.json`;
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast(`Respaldo descargado (${entries.length} registros)`);
 });
 $("importBtn").addEventListener("click", () => $("importFile").click());
 $("importFile").addEventListener("change", async ev => {
   const file = ev.target.files[0]; ev.target.value = "";
   if (!file) return;
-  const msg = $("backupMsg");
   try{
     const data = JSON.parse(await file.text());
     if (!data || !Array.isArray(data.entries)) throw new Error("formato");
     const fileSal = Number(data.cfg && data.cfg.salary) || Number(data.salary) || cfg.salary;
     const valid = data.entries.filter(e => e && /^\d{4}-\d{2}-\d{2}$/.test(e.date) && Number(e.min) > 0)
-      .map(e => ({date:e.date, min:Math.min(MAX_MIN, Math.round(Number(e.min))), type:e.type in TYPE_LBL ? e.type : "normal",
+      .map(e => ({date:e.date, min:Math.min(MAX_MIN, Math.round(Number(e.min))), type:["normal","feriado","exceso"].includes(e.type) ? e.type : "normal",
         note:String(e.note||"").slice(0,80), created:Number(e.created)||Date.now(), rate:Number(e.rate) || hourly(fileSal)}));
     const sig = e => `${e.date}|${e.min}|${e.type}|${e.created}`;
     const have = new Set(entries.map(sig));
     const nuevos = valid.filter(e => !have.has(sig(e)));
-    // Pagos: se agregan los que no existan (mismo id).
     let np = 0;
     if (data.pagos && typeof data.pagos === "object"){
       for (const [k, list] of Object.entries(data.pagos)){
         if (!/^\d{4}-\d{2}-[AB]$/.test(k) || !Array.isArray(list)) continue;
         const cur = pagos[k] = pagos[k] || [];
-        for (const p of list){ if (p && Number(p.amt) > 0 && !cur.some(x => x.id === p.id)){ cur.push({id:String(p.id||"p"+Date.now()+np), h:r2(Number(p.h)||0), amt:r2(Number(p.amt)), created:Number(p.created)||Date.now()}); np++; } }
+        for (const p of list){ if (p && Number(p.amt) > 0 && !cur.some(x => x.id === p.id)){ cur.push({id:String(p.id||"p"+Date.now()+np), h:r2(Number(p.h)||0), amt:r2(Number(p.amt)), label:String(p.label||"").slice(0,40), created:Number(p.created)||Date.now()}); np++; } }
         if (!cur.length) delete pagos[k];
       }
     }
-    if (mode === "db"){ for (const e of nuevos) await col.add(e); if (np) await saveCfg(); }
-    else { nuevos.forEach((e,i) => { e.id = "l"+e.created+"-"+i; entries.push(e); }); lsSave(); render(); }
-    msg.textContent = (nuevos.length || np) ? `Se importaron ${nuevos.length} registros y ${np} pagos.` : "No había nada nuevo en ese archivo.";
-  }catch(_){ msg.textContent = "Ese archivo no es un respaldo válido de esta app."; }
+    if (mode === "db"){ for (const e of nuevos) await col.add(e); }
+    else { nuevos.forEach((e,i) => { e.id = "l"+e.created+"-"+i; entries.push(e); }); }
+    await saveCfg();
+    toast((nuevos.length || np) ? `Importados ${nuevos.length} registros y ${np} líneas de recibo` : "No había nada nuevo en ese archivo");
+  }catch(_){ toast("Ese archivo no es un respaldo válido de esta app."); }
 });
 
-$("fDate").value = iso(new Date());
-lsLoad(); fillCfg(); render();
+// ===================== arranque =====================
+lsLoad(); applyTheme(); setTab("corte");
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   navigator.serviceWorker.register("sw.js").catch(() => {});
@@ -581,24 +1060,22 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     const db = await window.claude?.use?.("db");
     const user = db ? await window.claude.use("user") : null;
     const uid = user ? await user.id() : null;
-    if (!db || !uid){ setStatus("Guardando solo en este dispositivo."); return; }
+    if (!db || !uid) return;
     const base = "data/users/" + uid;
     col = db.collection(base + "/horas/extras");
     settingsDoc = db.doc(base + "/ajustes");
     mode = "db";
+    $("storeMsg").textContent = "Guardado en tu cuenta: se sincroniza en todos tus dispositivos.";
     settingsDoc.onSnapshot(s => {
       if (!s.exists) return;
       const d = s.data() || {};
-      cfg = {...DEFAULTS, ...cfg, ...Object.fromEntries(Object.entries(d).filter(([k]) => k in DEFAULTS))};
+      cfg = sanitizeCfg({...cfg, ...d});
       pagos = d.pagos && typeof d.pagos === "object" ? d.pagos : {};
-      fillCfg(); render();
+      applyTheme(); render();
     });
-    col.onSnapshot(snap => {
-      entries = snap.docs.map(d => ({id:d.id, ...d.data()}));
-      setStatus("Guardado en tu cuenta · se sincroniza en todos tus dispositivos", true);
-      render();
-    }, () => setStatus("No se pudo conectar. Recarga la página."));
-  }catch(_){ setStatus("Guardando solo en este dispositivo."); }
+    col.onSnapshot(snap => { entries = snap.docs.map(d => ({id:d.id, ...d.data()})); render(); },
+      () => toast("No se pudo conectar. Recarga la página."));
+  }catch(_){}
 })();
 </script>
 </body>
